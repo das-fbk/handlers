@@ -1,4 +1,0 @@
-#ensembles definitions
-# for each ensemble define a name used in interface
-ensemble1=RouteA
-ensemble2=RouteB
