@@ -33,6 +33,7 @@
 
 	<!-- dependencies -->
 	<dependencies>
+	 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
@@ -58,5 +59,27 @@
             <artifactId>json</artifactId>
             <version>20160212</version>
         </dependency>
+         <dependency>
+            <groupId>com.github.rubenlagus</groupId>
+            <artifactId>TelegramBots</artifactId>
+            <version>v2.3.3.4</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.5</version>
+        </dependency>
+       
+        
 	</dependencies>
 </project>
