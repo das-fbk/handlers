@@ -7,8 +7,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 
-import eu.fbk.das.domainobject.executable.utils.Rome2RioAPIWrapper;
 import eu.fbk.das.domainobject.executable.utils.TripAlternative;
+import eu.fbk.das.domainobject.executable.utils.BotTelegram.TravelAssistantBot;
+import eu.fbk.das.domainobject.executable.utils.Rome2Rio.Rome2RioAPIWrapper;
 import eu.fbk.das.process.engine.api.AbstractExecutableActivityInterface;
 import eu.fbk.das.process.engine.api.DomainObjectInstance;
 import eu.fbk.das.process.engine.api.ProcessEngine;
@@ -23,11 +24,16 @@ public class Rome2RioCallExecutable extends AbstractExecutableActivityInterface 
 			.getLogger(Rome2RioCallExecutable.class);
 
 	private ProcessEngine pe;
+	private ArrayList<TripAlternative> alternatives;
+	private TravelAssistantBot bot;
 
 	private static int hoaaCounter = 1;
 
-	public Rome2RioCallExecutable(ProcessEngine processEngine) {
+	public Rome2RioCallExecutable(ProcessEngine processEngine,
+			ArrayList<TripAlternative> alternatives, TravelAssistantBot bot) {
 		this.pe = processEngine;
+		this.alternatives = alternatives;
+		this.bot = bot;
 	}
 
 	@Override
@@ -44,28 +50,23 @@ public class Rome2RioCallExecutable extends AbstractExecutableActivityInterface 
 
 			logger.error("Domain Object with a state! ");
 			// concrete logic
-			// extract from and to variables
-			Element from = (Element) doi.getState().getStateVariable().get(0)
-					.getContent();
-			Element to = (Element) doi.getState().getStateVariable().get(1)
-					.getContent();
 
+			Element from = doi.getStateVariableContentByName("From");
+			Element to = doi.getStateVariableContentByName("To");
 			String fromValue = from.getFirstChild().getNodeValue();
 			String toValue = to.getFirstChild().getNodeValue();
 
 			// call Rome2Rio Service
-			String result = this.CallRome2Rio(fromValue, toValue);
-			Element response = (Element) doi.getState().getStateVariable()
-					.get(2).getContent();
-			response.setTextContent(result);
+			this.alternatives = this.CallRome2Rio(fromValue, toValue);
+			bot.setAlternatives(alternatives);
 
+			String result = extractString(alternatives);
+
+			// update the PlanList variable value
+			Element planElement = doi.getStateVariableContentByName("PlanList");
+			planElement.setTextContent(result);
 			// save result in response variable
-			doiState.get(2).setContent(response);
-
-			Element response1 = (Element) doi.getState().getStateVariable()
-					.get(2).getContent();
-			String value = response1.getFirstChild().getNodeValue();
-			logger.debug("Domain Object state! " + value);
+			doi.setStateVariableContentByVarName("PlanList", planElement);
 
 			// set activity to executed
 			currentConcrete.setExecuted(true);
@@ -76,9 +77,27 @@ public class Rome2RioCallExecutable extends AbstractExecutableActivityInterface 
 		return;
 	}
 
-	String CallRome2Rio(String from, String to) {
+	private String extractString(ArrayList<TripAlternative> alternatives) {
+		// extract unique String from the tripAlternatives
+		String result = "";
+		if (alternatives.size() != 0) {
+			for (int i = 0; i < alternatives.size(); i++) {
+				String current = alternatives.get(i).getMean();
+				if (i == 0) {
+					result = i + "," + current + "-";
+				} else if (i == alternatives.size() - 1) {
+					result = result + i + "," + current;
+				} else {
+					result = result + i + "," + current + "-";
+				}
+			}
+		}
+		return result;
+	}
 
-		String result = null;
+	ArrayList<TripAlternative> CallRome2Rio(String from, String to) {
+
+		String result = "";
 		Rome2RioAPIWrapper rome2RioWrapper = new Rome2RioAPIWrapper();
 
 		boolean nontrovate = true;
@@ -87,9 +106,14 @@ public class Rome2RioCallExecutable extends AbstractExecutableActivityInterface 
 
 		alternatives = rome2RioWrapper.getRome2RioAlternatives(from, to);
 
-		if (alternatives.size() != 0) {
-			result = alternatives.get(0).getMean();
-		}
-		return result;
+		return alternatives;
+		/*
+		 * if (alternatives.size() != 0) { for (int i = 0; i <
+		 * alternatives.size(); i++) { String current =
+		 * alternatives.get(i).getMean(); if (i == 0) { result = current + "-";
+		 * } else if (i == alternatives.size() - 1) { result = result + current;
+		 * } else { result = result + current + "-"; } } } return result;
+		 */
+
 	}
 }
