@@ -28,7 +28,6 @@ public class StartChatbotExecutable extends AbstractExecutableActivityInterface 
 		this.pe = processEngine;
 		this.bot = bot;
 		this.chatID = chatID;
-
 	}
 
 	@Override
@@ -53,7 +52,10 @@ public class StartChatbotExecutable extends AbstractExecutableActivityInterface 
 				// set activity to executed
 				logger.debug("Bot received Start Command ");
 				currentConcrete.setExecuted(true);
-				// bot.removeChatId(chatID);
+				// pe.stepAll();
+				// ActionEvent e = new ActionEvent(pe,
+				// ActionEvent.ACTION_PERFORMED, "step");
+				// aListner.actionPerformed(event);
 			}
 		}
 

@@ -57,6 +57,7 @@ public class InsertOptionalDataExecutable extends
 
 			// set activity to be executed
 			currentConcrete.setExecuted(true);
+			// pe.stepAll();
 		}
 
 		return;

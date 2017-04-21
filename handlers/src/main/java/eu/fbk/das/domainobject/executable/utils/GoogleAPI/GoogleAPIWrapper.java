@@ -11,7 +11,7 @@ import org.json.JSONObject;
 
 public class GoogleAPIWrapper {
 
-	public String getAddress(Double lat, Double longit) {
+	public String getAddress(Float lat, Float longit) {
 		String GoogleAPIKey = "AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg";
 		String latString = lat.toString();
 		String longString = longit.toString();

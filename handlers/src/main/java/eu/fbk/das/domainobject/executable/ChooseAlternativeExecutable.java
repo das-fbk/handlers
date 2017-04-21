@@ -57,6 +57,7 @@ public class ChooseAlternativeExecutable extends
 		Element goalHOAA = doi.getStateVariableContentByName("HOAAPlanGoal");
 		String extractedString = generateOverallString(alternative
 				.getSegments());
+		// String extractedString = "train-bus";
 		goalHOAA.setTextContent(extractedString);
 
 		// save result in response variable
@@ -64,6 +65,7 @@ public class ChooseAlternativeExecutable extends
 		doi.setStateVariableContentByVarName("HOAAPlanGoal", goalHOAA);
 
 		currentConcrete.setExecuted(true);
+		// pe.stepAll();
 
 		return;
 	}
@@ -86,13 +88,12 @@ public class ChooseAlternativeExecutable extends
 				if (i == 0) {
 					result = mean + ";" + agency + ";" + from + ";" + to + "*";
 				} else if (i == segments.size() - 1) {
-					result = result + mean + ";" + agency + ";" + from + "*"
+					result = result + mean + ";" + agency + ";" + from + ";"
 							+ to;
 				} else {
-					result = result + mean + ";" + agency + ";" + from + "*"
+					result = result + mean + ";" + agency + ";" + from + ";"
 							+ to + "*";
 				}
-
 			}
 		}
 		return result;

@@ -12,13 +12,14 @@ import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandle
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardAskFromManual;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardAskTo;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
-import org.telegram.telegrambots.TelegramApiException;
 import org.telegram.telegrambots.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendVenue;
@@ -29,6 +30,7 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import eu.fbk.das.domainobject.executable.utils.TripAlternative;
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Current;
@@ -55,223 +57,12 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 	private String currentDate;
 	private Boolean optionalDataDefined;
 	private String ChoosenAlternative;
-
-	public String getChoosenAlternative() {
-		return ChoosenAlternative;
-	}
-
-	public void setChoosenAlternative(String choosenAlternative) {
-		ChoosenAlternative = choosenAlternative;
-	}
-
-	public Boolean getOptionalDataDefined() {
-		return optionalDataDefined;
-	}
-
-	public void setOptionalDataDefined(Boolean optionalDataDefined) {
-		this.optionalDataDefined = optionalDataDefined;
-	}
-
-	public String getCurrentDate() {
-		return currentDate;
-	}
-
-	public void setCurrentDate(String currentDate) {
-		this.currentDate = currentDate;
-	}
-
-	public String getDepartureTime() {
-		return DepartureTime;
-	}
-
-	public void setDepartureTime(String departureTime) {
-		DepartureTime = departureTime;
-	}
-
-	public String getRouteType() {
-		return RouteType;
-	}
-
-	public void setRouteType(String routeType) {
-		RouteType = routeType;
-	}
-
-	private String DepartureTime;
-	private String TransportType;
-	private String RouteType;
-
-	public Boolean getCurrentLocation() {
-		return CurrentLocation;
-	}
-
-	public void setCurrentLocation(Boolean currentLocation) {
-		CurrentLocation = currentLocation;
-	}
-
-	public Boolean getManualLocation() {
-		return ManualLocation;
-	}
-
-	public void setManualLocation(Boolean manualLocation) {
-		ManualLocation = manualLocation;
-	}
-
-	private Boolean ManualLocation;
-
-	private Long currentID;
-
-	public Long getCurrentID() {
-		return currentID;
-	}
-
-	public void setCurrentID(Long currentID) {
-		this.currentID = currentID;
-	}
-
-	public ArrayList<Long> getChatIds() {
-		return chatIds;
-	}
-
-	public void setChatIds(ArrayList<Long> chatIds) {
-		this.chatIds = chatIds;
-	}
-
-	public void addChatId(Long chatID) {
-		this.chatIds.add(chatID);
-	}
-
-	public Integer getCurrentChatId() {
-		return currentChatId;
-	}
-
-	public void setCurrentChatId(Integer currentChatId) {
-		this.currentChatId = currentChatId;
-	}
-
-	ArrayList<TripAlternative> alternatives = new ArrayList<TripAlternative>();
-
-	public ArrayList<TripAlternative> getAlternatives() {
-		return alternatives;
-	}
-
-	public void setAlternatives(ArrayList<TripAlternative> alternatives) {
-		this.alternatives = alternatives;
-	}
-
-	public Boolean getResultsReceived() {
-		return resultsReceived;
-	}
-
-	public void setResultsReceived(Boolean resultsReceived) {
-		this.resultsReceived = resultsReceived;
-	}
-
-	public Boolean getDestinationReceived() {
-		return destinationReceived;
-	}
-
-	public void setDestinationReceived(Boolean destinationReceived) {
-		this.destinationReceived = destinationReceived;
-	}
-
-	public Boolean getSourceReceived() {
-		return sourceReceived;
-	}
-
-	public void setSourceReceived(Boolean sourceReceived) {
-		this.sourceReceived = sourceReceived;
-	}
-
-	public Boolean getStartReceived() {
-		return startReceived;
-	}
-
-	public void setStartReceived(Boolean startReceived) {
-		this.startReceived = startReceived;
-	}
-
-	private ArrayList<Integer> userIDs;
-
-	public ArrayList<Integer> getUserIDs() {
-		return userIDs;
-	}
-
-	public void setUserIDs(ArrayList<Integer> userIDs) {
-		this.userIDs = userIDs;
-	}
-
-	public String getTransportType() {
-		return transportType;
-	}
-
-	public void setTransportType(String transportType) {
-		this.transportType = transportType;
-	}
-
-	public String getTimeDeparture() {
-		return timeDeparture;
-	}
-
-	public void setTimeDeparture(String timeDeparture) {
-		this.timeDeparture = timeDeparture;
-	}
-
-	public String getProximity() {
-		return proximity;
-	}
-
-	public void setProximity(String proximity) {
-		this.proximity = proximity;
-	}
-
-	public Double getLat() {
-		return lat;
-	}
-
-	public void setLat(Double lat) {
-		this.lat = lat;
-	}
-
-	public Double getLongit() {
-		return longit;
-	}
-
-	public void setLongit(Double longit) {
-		this.longit = longit;
-	}
-
-	private Double lat, longit;
-
-	public String getToken() {
-		return token;
-	}
-
-	public void setToken(String token) {
-		this.token = token;
-	}
-
-	public String getDestination() {
-		return destination;
-	}
-
-	public void setStart(String start) {
-		this.start = start;
-	}
-
-	private String start;
-	private String destination;
-
-	public String getStart() {
-		return start;
-	}
-
-	public void setDestination(String destination) {
-		this.destination = destination;
-	}
+	private ActionListener aListner;
+	private ActionEvent event;
 
 	public TravelAssistantBot(String name, String token, Boolean startReceived,
 			Boolean sourceReceived, Boolean destinationReceived,
-			Boolean resultsReceived) {
+			Boolean resultsReceived, ActionListener aListner, ActionEvent event) {
 		super();
 		this.token = token;
 		this.name = name;
@@ -284,17 +75,9 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 		this.CurrentLocation = false;
 		this.ManualLocation = false;
 		this.optionalDataDefined = false;
+		this.aListner = aListner;
+		this.event = event;
 
-	}
-
-	@Override
-	public String getBotUsername() {
-		return name;
-	}
-
-	@Override
-	public String getBotToken() {
-		return token;
 	}
 
 	@Override
@@ -336,6 +119,7 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 	private void handleIncomingTextMessage(Message message)
 			throws TelegramApiException, ExecutionException {
 		System.out.println(message);
+		int pid = 0;
 		Long chatId = message.getChatId();
 
 		Integer userID = message.getFrom().getId();
@@ -355,6 +139,7 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 			// textStart(Current.getLanguage(chatId)));
 			// update hasmap (bot, chatID)
 			this.setStartReceived(true);
+			launchEffect();
 			break;
 
 		case BACKCOMMAND:
@@ -370,6 +155,7 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 					keyboardAskFromManual(chatId,
 							Database.getRome2RioDestination()),
 					"Inserisci la citta' di partenza");
+			launchEffect();
 			break;
 
 		// end messages-based commands
@@ -389,6 +175,7 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 				// memorize ChatID Started
 				this.setStartReceived(true);
 
+				launchEffect();
 				this.setCurrentID(chatId);
 				break;
 			case FROMMANUAL:
@@ -399,6 +186,8 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 						keyboardAskTo(chatId, Database.getRome2RioDestination()),
 						"Ora inserisci la citta' di destinazione");
 				this.setCurrentID(chatId);
+
+				launchEffect();
 				break;
 
 			case FROM:
@@ -411,6 +200,8 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 						keyboardAskTo(chatId, Database.getRome2RioDestination()),
 						"Ora inserisci la citta' di destinazione");
 				this.setCurrentID(chatId);
+
+				launchEffect();
 				break;
 			case TO:
 
@@ -425,8 +216,9 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 						"VUOI DEFINIRE I DETTAGLI DEL TUO VIAGGIO?");
 
 				this.setCurrentID(chatId);
-
+				launchEffect();
 				break;
+
 			case DETAILS:
 				System.out.println(message.getText());
 				String option = message.getText();
@@ -480,11 +272,13 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 					this.setChoosenAlternative(message.getText());
 
 				}
+				launchEffect();
 				break;
 			case CALCOLA:
 				this.setResultsReceived(true);
 				this.setCurrentID(chatId);
 
+				launchEffect();
 				break;
 
 			case LANGUAGE:
@@ -654,6 +448,7 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 		switch (Current.getMenu(message.getChatId())) {
 		case ASKLOCATION:
 			this.setCurrentLocation(true);
+			launchEffect();
 			break;
 		}
 	}
@@ -742,5 +537,244 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 	}
 
 	// endregion utilities
+
+	public String getChoosenAlternative() {
+		return ChoosenAlternative;
+	}
+
+	public void setChoosenAlternative(String choosenAlternative) {
+		ChoosenAlternative = choosenAlternative;
+	}
+
+	public Boolean getOptionalDataDefined() {
+		return optionalDataDefined;
+	}
+
+	public void setOptionalDataDefined(Boolean optionalDataDefined) {
+		this.optionalDataDefined = optionalDataDefined;
+	}
+
+	public String getCurrentDate() {
+		return currentDate;
+	}
+
+	public void setCurrentDate(String currentDate) {
+		this.currentDate = currentDate;
+	}
+
+	public String getDepartureTime() {
+		return DepartureTime;
+	}
+
+	public void setDepartureTime(String departureTime) {
+		DepartureTime = departureTime;
+	}
+
+	public String getRouteType() {
+		return RouteType;
+	}
+
+	public void setRouteType(String routeType) {
+		RouteType = routeType;
+	}
+
+	private String DepartureTime;
+	private String TransportType;
+	private String RouteType;
+
+	public Boolean getCurrentLocation() {
+		return CurrentLocation;
+	}
+
+	public void setCurrentLocation(Boolean currentLocation) {
+		CurrentLocation = currentLocation;
+	}
+
+	public Boolean getManualLocation() {
+		return ManualLocation;
+	}
+
+	public void setManualLocation(Boolean manualLocation) {
+		ManualLocation = manualLocation;
+	}
+
+	private Boolean ManualLocation;
+
+	private Long currentID;
+
+	public Long getCurrentID() {
+		return currentID;
+	}
+
+	public void setCurrentID(Long currentID) {
+		this.currentID = currentID;
+	}
+
+	public ArrayList<Long> getChatIds() {
+		return chatIds;
+	}
+
+	public void setChatIds(ArrayList<Long> chatIds) {
+		this.chatIds = chatIds;
+	}
+
+	public void addChatId(Long chatID) {
+		this.chatIds.add(chatID);
+	}
+
+	public Integer getCurrentChatId() {
+		return currentChatId;
+	}
+
+	public void setCurrentChatId(Integer currentChatId) {
+		this.currentChatId = currentChatId;
+	}
+
+	ArrayList<TripAlternative> alternatives = new ArrayList<TripAlternative>();
+
+	public ArrayList<TripAlternative> getAlternatives() {
+		return alternatives;
+	}
+
+	public void setAlternatives(ArrayList<TripAlternative> alternatives) {
+		this.alternatives = alternatives;
+	}
+
+	public Boolean getResultsReceived() {
+		return resultsReceived;
+	}
+
+	public void setResultsReceived(Boolean resultsReceived) {
+		this.resultsReceived = resultsReceived;
+	}
+
+	public Boolean getDestinationReceived() {
+		return destinationReceived;
+	}
+
+	public void setDestinationReceived(Boolean destinationReceived) {
+		this.destinationReceived = destinationReceived;
+	}
+
+	public Boolean getSourceReceived() {
+		return sourceReceived;
+	}
+
+	public void setSourceReceived(Boolean sourceReceived) {
+		this.sourceReceived = sourceReceived;
+	}
+
+	public Boolean getStartReceived() {
+		return startReceived;
+	}
+
+	public void setStartReceived(Boolean startReceived) {
+		this.startReceived = startReceived;
+	}
+
+	private ArrayList<Integer> userIDs;
+
+	public ArrayList<Integer> getUserIDs() {
+		return userIDs;
+	}
+
+	public void setUserIDs(ArrayList<Integer> userIDs) {
+		this.userIDs = userIDs;
+	}
+
+	public String getTransportType() {
+		return transportType;
+	}
+
+	public void setTransportType(String transportType) {
+		this.transportType = transportType;
+	}
+
+	public String getTimeDeparture() {
+		return timeDeparture;
+	}
+
+	public void setTimeDeparture(String timeDeparture) {
+		this.timeDeparture = timeDeparture;
+	}
+
+	public String getProximity() {
+		return proximity;
+	}
+
+	public void setProximity(String proximity) {
+		this.proximity = proximity;
+	}
+
+	public Float getLat() {
+		return lat;
+	}
+
+	public void setLat(Float lat) {
+		this.lat = lat;
+	}
+
+	public Float getLongit() {
+		return longit;
+	}
+
+	public void setLongit(Float longit) {
+		this.longit = longit;
+	}
+
+	private Float lat, longit;
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getDestination() {
+		return destination;
+	}
+
+	public void setStart(String start) {
+		this.start = start;
+	}
+
+	private String start;
+	private String destination;
+
+	public String getStart() {
+		return start;
+	}
+
+	public void setDestination(String destination) {
+		this.destination = destination;
+	}
+
+	@Override
+	public String getBotUsername() {
+		return name;
+	}
+
+	@Override
+	public String getBotToken() {
+		return token;
+	}
+
+	private int getRunningProcess() {
+		int runningPid = 4;
+		// Map<Integer, ProcessDiagram> processes = this.processEngine
+		// .getProcesses();
+		// for (ProcessDiagram p : processes.values()) {
+		// if (p.isRunning()) {
+		// runningPid = p.getpid();
+		// }
+		// }
+		return runningPid;
+	}
+
+	private void launchEffect() {
+		aListner.actionPerformed(event);
+	}
 
 }

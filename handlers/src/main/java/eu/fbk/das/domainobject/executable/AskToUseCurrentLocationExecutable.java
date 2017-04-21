@@ -50,6 +50,7 @@ public class AskToUseCurrentLocationExecutable extends
 		} else if (bot.getManualLocation()) {
 			// From will be inserted manually by the user
 			currentConcrete.setExecuted(true);
+			// pe.stepAll();
 		}
 
 		return;

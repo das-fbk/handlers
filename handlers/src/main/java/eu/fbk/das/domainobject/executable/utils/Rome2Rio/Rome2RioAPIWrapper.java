@@ -38,12 +38,14 @@ public class Rome2RioAPIWrapper {
 
 				// PRICES
 				JSONArray prices = new JSONArray();
-				prices = route.getJSONArray("indicativePrices");
-				JSONObject price = (JSONObject) prices.get(0);
-				// System.out.println(price);
-
-				// price
-				Long priceInd = price.getLong("price");
+				JSONObject price = new JSONObject();
+				Long priceInd = null;
+				// prices = route.getJSONArray("indicativePrices");
+				// if (prices != null && prices.length() != 0) {
+				// price = (JSONObject) prices.get(0);
+				// // price
+				// priceInd = price.getLong("price");
+				// }
 
 				// distance
 				Long distance = route.getLong("distance");

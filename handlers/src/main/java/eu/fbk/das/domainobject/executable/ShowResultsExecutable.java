@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.telegram.telegrambots.TelegramApiException;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.w3c.dom.Element;
 
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.TravelAssistantBot;
@@ -69,6 +69,7 @@ public class ShowResultsExecutable extends AbstractExecutableActivityInterface {
 				try {
 					bot.sendMessage(sendMessage);
 					currentConcrete.setExecuted(true);
+					// pe.stepAll();
 				} catch (TelegramApiException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
