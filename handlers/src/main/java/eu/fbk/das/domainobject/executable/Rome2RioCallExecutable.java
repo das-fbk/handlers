@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 import org.w3c.dom.Element;
 
 import eu.fbk.das.domainobject.executable.utils.TripAlternative;
@@ -26,6 +27,7 @@ public class Rome2RioCallExecutable extends AbstractExecutableActivityInterface 
 	private ProcessEngine pe;
 	private ArrayList<TripAlternative> alternatives;
 	private TravelAssistantBot bot;
+	private JSONObject rome2rioJson;
 
 	private static int hoaaCounter = 1;
 
@@ -34,6 +36,7 @@ public class Rome2RioCallExecutable extends AbstractExecutableActivityInterface 
 		this.pe = processEngine;
 		this.alternatives = alternatives;
 		this.bot = bot;
+		this.rome2rioJson = new JSONObject();
 	}
 
 	@Override
@@ -68,6 +71,14 @@ public class Rome2RioCallExecutable extends AbstractExecutableActivityInterface 
 			// save result in response variable
 			doi.setStateVariableContentByVarName("PlanList", planElement);
 
+			this.rome2rioJson = this.CallRome2RioProva(fromValue, toValue);
+			// update the PlannerOutput variable value
+			Element jsonElement = doi
+					.getStateVariableContentByName("PlannerOutput");
+			jsonElement.setTextContent(this.rome2rioJson.toString());
+			// save result in response variable
+			doi.setStateVariableContentByVarName("PlannerOutput", jsonElement);
+
 			// set activity to executed
 			currentConcrete.setExecuted(true);
 			return;
@@ -75,6 +86,16 @@ public class Rome2RioCallExecutable extends AbstractExecutableActivityInterface 
 		logger.debug("Domain Object without a state! ");
 		currentConcrete.setExecuted(true);
 		return;
+	}
+
+	private JSONObject CallRome2RioProva(String from, String to) {
+		Rome2RioAPIWrapper rome2RioWrapper = new Rome2RioAPIWrapper();
+
+		JSONObject result = new JSONObject();
+
+		result = rome2RioWrapper.getRome2RioResponse(from, to);
+
+		return result;
 	}
 
 	private String extractString(ArrayList<TripAlternative> alternatives) {

@@ -123,6 +123,19 @@ public class Rome2RioAPIWrapper {
 		return alternatives;
 	}
 
+	public JSONObject getRome2RioResponse(String partenza, String destinazione) {
+
+		JSONObject response = null;
+		String result = callURL("http://free.rome2rio.com/api/1.4/json/Search?key=Yt1V3vTI&oName="
+				+ partenza + "&dName=" + destinazione);
+		if (result.equalsIgnoreCase("erroreAPI")) {
+			return response;
+		} else {
+			response = new JSONObject(result);
+		}
+		return response;
+	}
+
 	private String retrieveAgency(int index, JSONArray agencies) {
 		String result = "";
 		if (index == 999) {
