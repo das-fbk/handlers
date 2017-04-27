@@ -66,10 +66,11 @@ public class Rome2RioCallExecutable extends AbstractExecutableActivityInterface 
 			String result = extractString(alternatives);
 
 			// update the PlanList variable value
-			Element planElement = doi.getStateVariableContentByName("PlanList");
-			planElement.setTextContent(result);
-			// save result in response variable
-			doi.setStateVariableContentByVarName("PlanList", planElement);
+			// Element planElement =
+			// doi.getStateVariableContentByName("PlanList");
+			// planElement.setTextContent(result);
+			// // save result in response variable
+			// doi.setStateVariableContentByVarName("PlanList", planElement);
 
 			this.rome2rioJson = this.CallRome2RioProva(fromValue, toValue);
 			// update the PlannerOutput variable value
