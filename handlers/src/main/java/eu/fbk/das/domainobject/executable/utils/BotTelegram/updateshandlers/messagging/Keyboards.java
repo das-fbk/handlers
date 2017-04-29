@@ -195,9 +195,9 @@ public class Keyboards {
 
 		for (int i = 0; i < alternatives.size(); i++) {
 			String mean = alternatives.get(i).getMean();
-			Long duration = alternatives.get(i).getDuration();
-			Long cost = alternatives.get(i).getPrice();
-			Long distance = alternatives.get(i).getDistance();
+			Double duration = alternatives.get(i).getDuration();
+			Double cost = alternatives.get(i).getPrice();
+			Double distance = alternatives.get(i).getDistance();
 			String durationString = duration.toString() + " min";
 			String distanceString = distance.toString() + " Km";
 			String costString = cost.toString() + " \u20ac";
@@ -227,9 +227,9 @@ public class Keyboards {
 
 		for (int i = 0; i < alternatives.size(); i++) {
 			String mean = alternatives.get(i).getMean();
-			Long duration = alternatives.get(i).getDuration();
-			Long cost = alternatives.get(i).getPrice();
-			Long distance = alternatives.get(i).getDistance();
+			Double duration = alternatives.get(i).getDuration();
+			Double cost = alternatives.get(i).getPrice();
+			Double distance = alternatives.get(i).getDistance();
 			String durationString = duration.toString() + " min";
 			String distanceString = distance.toString() + " Km";
 			String costString = cost.toString() + " \u20ac";
