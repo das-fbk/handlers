@@ -65,14 +65,14 @@ public class Keyboards {
 
 	private static ReplyKeyboardMarkup keyboardFromManual(long chatId,
 			List<String> zone, Menu menu) {
+
 		ReplyKeyboardMarkup replyKeyboardMarkup = keyboard();
 		List<KeyboardRow> keyboard = new ArrayList<>();
 
-		byte[] emojiBytes = new byte[] { (byte) 0xF0, (byte) 0x9F, (byte) 0x94,
-				(byte) 0x99 };
-		String backEmoticon = new String(emojiBytes, Charset.forName("UTF-8"));
-
-		keyboard.add(keyboardRowButton(backEmoticon));
+		byte[] emojiBytes = new byte[] { (byte) 0xE2, (byte) 0x9D, (byte) 0x93 };
+		String helpEmoticon = new String(emojiBytes, Charset.forName("UTF-8"));
+		String help = helpEmoticon + " HELP";
+		keyboard.add(keyboardRowButton(help));
 
 		replyKeyboardMarkup.setKeyboard(keyboard);
 
@@ -108,13 +108,30 @@ public class Keyboards {
 	private static ReplyKeyboardMarkup keyboardTo(long chatId,
 			List<String> zone, Menu menu) {
 		ReplyKeyboardMarkup replyKeyboardMarkup = keyboard();
+
 		List<KeyboardRow> keyboard = new ArrayList<>();
 
-		byte[] emojiBytes = new byte[] { (byte) 0xF0, (byte) 0x9F, (byte) 0x94,
-				(byte) 0x99 };
-		String backEmoticon = new String(emojiBytes, Charset.forName("UTF-8"));
+		byte[] emojiBytes = new byte[] { (byte) 0xE2, (byte) 0x9D, (byte) 0x93 };
+		String helpEmoticon = new String(emojiBytes, Charset.forName("UTF-8"));
+		String help = helpEmoticon + " HELP";
+		keyboard.add(keyboardRowButton(help));
 
-		keyboard.add(keyboardRowButton(backEmoticon));
+		replyKeyboardMarkup.setKeyboard(keyboard);
+
+		Current.setMenu(chatId, menu);
+		return replyKeyboardMarkup;
+	}
+
+	private static ReplyKeyboardMarkup keyboardCalcola(long chatId,
+			List<String> zone, Menu menu) {
+		ReplyKeyboardMarkup replyKeyboardMarkup = keyboard();
+
+		List<KeyboardRow> keyboard = new ArrayList<>();
+
+		byte[] emojiBytes = new byte[] { (byte) 0xE2, (byte) 0x9D, (byte) 0x93 };
+		String helpEmoticon = new String(emojiBytes, Charset.forName("UTF-8"));
+		String help = helpEmoticon + " HELP";
+		keyboard.add(keyboardRowButton(help));
 
 		replyKeyboardMarkup.setKeyboard(keyboard);
 
@@ -375,6 +392,11 @@ public class Keyboards {
 	public static ReplyKeyboardMarkup keyboardAskTransportType(long chatId,
 			List<String> sources) {
 		return keyboardTransportType(chatId, sources, Menu.TRANSPORTTYPE);
+	}
+
+	public static ReplyKeyboardMarkup keyboardCalcola(long chatId,
+			List<String> sources) {
+		return keyboardCalcola(chatId, sources, Menu.DETAILS);
 	}
 
 	public static ReplyKeyboardMarkup keyboardRome2Rio(long chatId,
