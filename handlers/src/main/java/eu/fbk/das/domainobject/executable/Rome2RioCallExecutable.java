@@ -60,10 +60,8 @@ public class Rome2RioCallExecutable extends AbstractExecutableActivityInterface 
 			String toValue = to.getFirstChild().getNodeValue();
 
 			// call Rome2Rio Service
-			this.alternatives = this.CallRome2Rio(fromValue, toValue);
-			bot.setAlternatives(alternatives);
-
-			String result = extractString(alternatives);
+			// this.alternatives = this.CallRome2Rio(fromValue, toValue);
+			// bot.setAlternatives(alternatives);
 
 			// update the PlanList variable value
 			// Element planElement =
@@ -74,10 +72,16 @@ public class Rome2RioCallExecutable extends AbstractExecutableActivityInterface 
 
 			this.rome2rioJson = this.CallRome2RioProva(fromValue, toValue);
 			// update the PlannerOutput variable value
+
+			// String outputAndService = "Rome2Rio" + "#"
+			// + this.rome2rioJson.toString();
+			// System.out.println(outputAndService);
 			Element jsonElement = doi
 					.getStateVariableContentByName("PlannerOutput");
-			jsonElement.setTextContent(this.rome2rioJson.toString());
+			jsonElement.setTextContent("Rome2Rio<>"
+					+ this.rome2rioJson.toString());
 			// save result in response variable
+
 			doi.setStateVariableContentByVarName("PlannerOutput", jsonElement);
 
 			// set activity to executed
