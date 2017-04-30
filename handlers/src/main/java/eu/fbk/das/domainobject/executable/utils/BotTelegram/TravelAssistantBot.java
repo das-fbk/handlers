@@ -11,6 +11,7 @@ import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandle
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardAskFrom;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardAskFromManual;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardAskTo;
+import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardCalcola;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -171,7 +172,7 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 								Database.getRome2RioDestination()),
 						"Benvenuto nel tuo assistente di viaggio virtuale. Per iniziare seleziona  "
 								+ "una delle due alternative");
-				System.out.println("qui inizi il chat bot");
+				// System.out.println("qui inizi il chat bot");
 				// memorize ChatID Started
 				this.setStartReceived(true);
 
@@ -238,12 +239,20 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 					this.setRouteType("fastest");
 
 					this.setOptionalDataDefined(true);
+					/*
+					 * SendMessage sendMessage = new SendMessage()
+					 * .setChatId(message.getChatId().toString());
+					 * sendMessage.setText
+					 * ("--- CALCOLO ALTERNATIVE IN CORSO ---");
+					 * 
+					 * sendMessage(sendMessage);
+					 */
 
-					SendMessage sendMessage = new SendMessage()
-							.setChatId(message.getChatId().toString());
-					sendMessage.setText("--- CALCOLO ALTERNATIVE IN CORSO ---");
-
-					sendMessage(sendMessage);
+					sendMessageDefault(
+							message,
+							keyboardCalcola(chatId,
+									Database.getRome2RioDestination()),
+							"--- CALCOLO ALTERNATIVE IN CORSO ---");
 
 				} else if (option.equalsIgnoreCase("NO")) {
 					// here we define defaultData
@@ -261,11 +270,18 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 					this.setRouteType("fastest");
 
 					this.setOptionalDataDefined(true);
-
-					SendMessage sendMessage = new SendMessage()
-							.setChatId(message.getChatId().toString());
-					sendMessage.setText("--- CALCOLO ALTERNATIVE IN CORSO ---");
-					sendMessage(sendMessage);
+					/*
+					 * SendMessage sendMessage = new SendMessage()
+					 * .setChatId(message.getChatId().toString());
+					 * sendMessage.setText
+					 * ("--- CALCOLO ALTERNATIVE IN CORSO ---");
+					 * sendMessage(sendMessage);
+					 */
+					sendMessageDefault(
+							message,
+							keyboardCalcola(chatId,
+									Database.getRome2RioDestination()),
+							"--- CALCOLO ALTERNATIVE IN CORSO ---");
 
 				} else {
 					// choosen trip received
