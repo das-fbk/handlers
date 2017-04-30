@@ -88,12 +88,12 @@ public class BBCServiceCallExecutable extends
 			String front = (String) links.get("_front");
 			System.out.println("front: " + front);
 
-			// update the PlannerOutput variable value
+			// update the ResultList variable value
 			Element jsonElement = doi
-					.getStateVariableContentByName("PlannerOutput");
+					.getStateVariableContentByName("ResultList");
 			jsonElement.setTextContent("BlaBlaCar<>" + front);
 			// save result in response variable
-			doi.setStateVariableContentByVarName("PlannerOutput", jsonElement);
+			doi.setStateVariableContentByVarName("ResultList", jsonElement);
 
 			// set activity to executed
 			currentConcrete.setExecuted(true);

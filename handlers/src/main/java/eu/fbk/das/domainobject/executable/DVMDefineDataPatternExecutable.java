@@ -77,6 +77,24 @@ public class DVMDefineDataPatternExecutable extends
 					.getStateVariableContentByName("PlannerOutput");
 			String planOutValue = planOut.getFirstChild().getNodeValue();
 
+			/****************** AD HOC - ANDRA ELIMINATO ************************************/
+			if (planOutValue.equals("")) {
+				List<DomainObjectInstance> dois = pe.getDomainObjectInstances();
+				for (DomainObjectInstance current : dois) {
+					if (current.getId().equals("User_1")) {
+						Element elemResultList = current
+								.getStateVariableContentByName("TA_IdentifyLeg-1.ResultList");
+						Element el = current
+								.getStateVariableContentByName("PlannerOutput");
+						el.setTextContent(elemResultList.getFirstChild()
+								.getNodeValue());
+						planOutValue = elemResultList.getFirstChild()
+								.getNodeValue();
+					}
+				}
+			}
+			/******************************************************************************/
+
 			// extract the current mobility Service (i.e., Rome2Rio,BlaBlaCar,
 			// etc..
 			String[] parts = planOutValue.split("<>");
