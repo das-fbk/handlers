@@ -45,28 +45,31 @@ public class ChooseAlternativeExecutable extends
 		// save result in response variable
 		doi.setStateVariableContentByVarName("ChosenPlan", choice);
 
-		// Split the alternative String to retrieve the index selected
-		String[] parts = bot.getChoosenAlternative().split(",");
-		String index = parts[0];
-		int indexValue = Integer.parseInt(index);
+		if (bot.getChoosenAlternative() != null) {
 
-		// retrieve the right alternative from the global variable
-		System.out.println("ALTERNATIVE: " + bot.getAlternatives().size());
-		TripAlternative alternative = bot.getAlternatives().get(indexValue);
+			// Split the alternative String to retrieve the index selected
+			String[] parts = bot.getChoosenAlternative().split("-");
+			String index = parts[0];
+			int indexValue = Integer.parseInt(index);
 
-		Element goalHOAA = doi.getStateVariableContentByName("HOAAPlanGoal");
-		String extractedString = generateOverallString(alternative
-				.getSegments());
-		// String extractedString = "train-bus";
-		goalHOAA.setTextContent(extractedString);
+			// retrieve the right alternative from the global variable
+			System.out.println("ALTERNATIVE: " + bot.getAlternatives().size());
+			TripAlternative alternative = bot.getAlternatives().get(indexValue);
 
-		// save result in response variable
-		// set the HOAA Goal starting from the choosen plan alternative
-		doi.setStateVariableContentByVarName("HOAAPlanGoal", goalHOAA);
+			Element goalHOAA = doi
+					.getStateVariableContentByName("HOAAPlanGoal");
+			String extractedString = generateOverallString(alternative
+					.getSegments());
+			// String extractedString = "train-bus";
+			goalHOAA.setTextContent(extractedString);
 
-		currentConcrete.setExecuted(true);
-		// pe.stepAll();
+			// save result in response variable
+			// set the HOAA Goal starting from the choosen plan alternative
+			doi.setStateVariableContentByVarName("HOAAPlanGoal", goalHOAA);
 
+			currentConcrete.setExecuted(true);
+			// pe.stepAll();
+		}
 		return;
 	}
 
