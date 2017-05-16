@@ -18,16 +18,13 @@ public class TAcheckLegSetExecutable extends
 
 	@Override
 	public void execute(ProcessDiagram proc, ProcessActivity pa) {
-		// execution of the effect
-		// <tns1:event dpName="TravelAssistant"
-		// eventName="completeAssistance"></tns1:event>
+
 		EffectType effect = new EffectType();
 		Event event = new Event();
 		event.setDpName("TravelAssistant");
 		event.setEventName("completeAssistance");
 		effect.getEvent().add(event);
 		pe.applyEffect(proc, effect);
-
 		pa.setExecuted(true);
 	}
 

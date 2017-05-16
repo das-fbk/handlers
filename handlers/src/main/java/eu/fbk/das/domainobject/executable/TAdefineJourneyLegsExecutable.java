@@ -18,7 +18,6 @@ import eu.fbk.das.process.engine.api.domain.ProcessActivity;
 import eu.fbk.das.process.engine.api.domain.ProcessDiagram;
 import eu.fbk.das.process.engine.api.jaxb.ClauseType.Point;
 import eu.fbk.das.process.engine.api.jaxb.ClauseType.Point.DomainProperty;
-import eu.fbk.das.process.engine.api.jaxb.DomainObject.State;
 import eu.fbk.das.process.engine.api.jaxb.GoalType;
 import eu.fbk.das.process.engine.api.jaxb.VariableType;
 
@@ -90,7 +89,7 @@ public class TAdefineJourneyLegsExecutable extends
 
 	private Optional<AbstractActivity> buildAbstractActivityfor(
 			DomainObjectInstance doi, String token, int source, int target) {
-		StringTokenizer stk = new StringTokenizer(token, ";");
+		// StringTokenizer stk = new StringTokenizer(token, ";");
 		// String mean = "";
 		// String company = "";
 		// String departure = "";
@@ -165,18 +164,18 @@ public class TAdefineJourneyLegsExecutable extends
 		return actionVariable;
 	}
 
-	private void updateDoiState(DomainObjectInstance doi,
-			List<VariableType> actionVariable) {
-		if (doi != null) {
-			if (doi.getState() != null) {
-				if (doi.getState().getStateVariable() != null) {
-					doi.getState().getStateVariable().addAll(actionVariable);
-				}
-			} else {
-				State s = new State();
-				s.getStateVariable().addAll(actionVariable);
-				doi.setState(s);
-			}
-		}
-	}
+	// private void updateDoiState(DomainObjectInstance doi,
+	// List<VariableType> actionVariable) {
+	// if (doi != null) {
+	// if (doi.getState() != null) {
+	// if (doi.getState().getStateVariable() != null) {
+	// doi.getState().getStateVariable().addAll(actionVariable);
+	// }
+	// } else {
+	// State s = new State();
+	// s.getStateVariable().addAll(actionVariable);
+	// doi.setState(s);
+	// }
+	// }
+	// }
 }

@@ -8,9 +8,9 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.w3c.dom.Element;
 
-import eu.fbk.das.domainobject.executable.utils.TripAlternative;
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.TravelAssistantBot;
 import eu.fbk.das.domainobject.executable.utils.Rome2Rio.Rome2RioAPIWrapper;
+import eu.fbk.das.domainobject.executable.utils.Rome2Rio.TripAlternativeRome2Rio;
 import eu.fbk.das.process.engine.api.AbstractExecutableActivityInterface;
 import eu.fbk.das.process.engine.api.DomainObjectInstance;
 import eu.fbk.das.process.engine.api.ProcessEngine;
@@ -25,18 +25,16 @@ public class Rome2RioCallExecutable extends AbstractExecutableActivityInterface 
 			.getLogger(Rome2RioCallExecutable.class);
 
 	private ProcessEngine pe;
-	private ArrayList<TripAlternative> alternatives;
-	private TravelAssistantBot bot;
-	private JSONObject rome2rioJson;
 
-	private static int hoaaCounter = 1;
+	private JSONObject rome2rioJson;
+	private TravelAssistantBot bot;
 
 	public Rome2RioCallExecutable(ProcessEngine processEngine,
-			ArrayList<TripAlternative> alternatives, TravelAssistantBot bot) {
+			ArrayList<TripAlternativeRome2Rio> alternatives,
+			TravelAssistantBot bot) {
 		this.pe = processEngine;
-		this.alternatives = alternatives;
-		this.bot = bot;
 		this.rome2rioJson = new JSONObject();
+		this.bot = bot;
 	}
 
 	@Override
@@ -45,13 +43,12 @@ public class Rome2RioCallExecutable extends AbstractExecutableActivityInterface 
 				.getCurrentActivity();
 
 		DomainObjectInstance doi = pe.getDomainObjectInstance(proc);
-		ProcessDiagram process = doi.getProcess();
 
 		// get the domain object state
 		List<VariableType> doiState = doi.getState().getStateVariable();
 		if (doiState != null) {
 
-			logger.error("Domain Object with a state! ");
+			logger.info("Domain Object with a state! ");
 			// concrete logic
 
 			Element from = doi.getStateVariableContentByName("From");
@@ -59,30 +56,24 @@ public class Rome2RioCallExecutable extends AbstractExecutableActivityInterface 
 			String fromValue = from.getFirstChild().getNodeValue();
 			String toValue = to.getFirstChild().getNodeValue();
 
-			// call Rome2Rio Service
-			// this.alternatives = this.CallRome2Rio(fromValue, toValue);
-			// bot.setAlternatives(alternatives);
-
-			// update the PlanList variable value
-			// Element planElement =
-			// doi.getStateVariableContentByName("PlanList");
-			// planElement.setTextContent(result);
-			// // save result in response variable
-			// doi.setStateVariableContentByVarName("PlanList", planElement);
-
-			this.rome2rioJson = this.CallRome2RioProva(fromValue, toValue);
+			this.rome2rioJson = this.CallRome2Rio(fromValue, toValue);
 			// update the PlannerOutput variable value
 
-			// String outputAndService = "Rome2Rio" + "#"
-			// + this.rome2rioJson.toString();
-			// System.out.println(outputAndService);
 			Element jsonElement = doi
 					.getStateVariableContentByName("PlannerOutput");
 			jsonElement.setTextContent("Rome2Rio<>"
 					+ this.rome2rioJson.toString());
 			// save result in response variable
-
 			doi.setStateVariableContentByVarName("PlannerOutput", jsonElement);
+
+			// save the Rome2Rio alternatives list in the bot variable
+			ArrayList<TripAlternativeRome2Rio> romeToRioAlternatives = new ArrayList<TripAlternativeRome2Rio>();
+
+			Rome2RioAPIWrapper rome2RioWrapper = new Rome2RioAPIWrapper();
+			romeToRioAlternatives = rome2RioWrapper.getRome2RioAlternatives(
+					fromValue, toValue);
+
+			bot.setRomeToRioAlternatives(romeToRioAlternatives);
 
 			// set activity to executed
 			currentConcrete.setExecuted(true);
@@ -93,7 +84,7 @@ public class Rome2RioCallExecutable extends AbstractExecutableActivityInterface 
 		return;
 	}
 
-	private JSONObject CallRome2RioProva(String from, String to) {
+	private JSONObject CallRome2Rio(String from, String to) {
 		Rome2RioAPIWrapper rome2RioWrapper = new Rome2RioAPIWrapper();
 
 		JSONObject result = new JSONObject();
@@ -103,43 +94,4 @@ public class Rome2RioCallExecutable extends AbstractExecutableActivityInterface 
 		return result;
 	}
 
-	private String extractString(ArrayList<TripAlternative> alternatives) {
-		// extract unique String from the tripAlternatives
-		String result = "";
-		if (alternatives.size() != 0) {
-			for (int i = 0; i < alternatives.size(); i++) {
-				String current = alternatives.get(i).getMean();
-				if (i == 0) {
-					result = i + "," + current + "-";
-				} else if (i == alternatives.size() - 1) {
-					result = result + i + "," + current;
-				} else {
-					result = result + i + "," + current + "-";
-				}
-			}
-		}
-		return result;
-	}
-
-	ArrayList<TripAlternative> CallRome2Rio(String from, String to) {
-
-		String result = "";
-		Rome2RioAPIWrapper rome2RioWrapper = new Rome2RioAPIWrapper();
-
-		boolean nontrovate = true;
-
-		ArrayList<TripAlternative> alternatives = new ArrayList<TripAlternative>();
-
-		alternatives = rome2RioWrapper.getRome2RioAlternatives(from, to);
-
-		return alternatives;
-		/*
-		 * if (alternatives.size() != 0) { for (int i = 0; i <
-		 * alternatives.size(); i++) { String current =
-		 * alternatives.get(i).getMean(); if (i == 0) { result = current + "-";
-		 * } else if (i == alternatives.size() - 1) { result = result + current;
-		 * } else { result = result + current + "-"; } } } return result;
-		 */
-
-	}
 }

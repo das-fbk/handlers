@@ -10,15 +10,12 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import eu.fbk.das.domainobject.executable.utils.Segment;
-import eu.fbk.das.domainobject.executable.utils.TripAlternative;
-
 public class Rome2RioAPIWrapper {
 
-	public ArrayList<TripAlternative> getRome2RioAlternatives(String partenza,
-			String destinazione) {
+	public ArrayList<TripAlternativeRome2Rio> getRome2RioAlternatives(
+			String partenza, String destinazione) {
 
-		ArrayList<TripAlternative> alternatives = new ArrayList<TripAlternative>();
+		ArrayList<TripAlternativeRome2Rio> alternatives = new ArrayList<TripAlternativeRome2Rio>();
 		String result = callURL("http://free.rome2rio.com/api/1.4/json/Search?key=Yt1V3vTI&oName="
 				+ partenza + "&dName=" + destinazione);
 		if (result.equalsIgnoreCase("erroreAPI")) {
@@ -28,24 +25,32 @@ public class Rome2RioAPIWrapper {
 			JSONObject jsonObj = new JSONObject(result);
 			JSONArray routes = new JSONArray();
 			routes = jsonObj.getJSONArray("routes");
+			// System.out.println("routes.length(): "+routes.length());
 			for (int i = 0; i < routes.length(); i++) {
 
 				System.out.println("Soluzione " + i + ":");
 				JSONObject route = (JSONObject) routes.get(i);
-				// System.out.println(route);
+				System.out.println(route);
+
 				// transportation mean
 				String mean = route.getString("name");
 
+				// changes
+				JSONArray changes = new JSONArray();
+				changes = route.getJSONArray("segments");
+
+				int number_changes = -1;
+				for (int j = 0; j < changes.length(); j++) {
+					number_changes++;
+				}
+
 				// PRICES
 				JSONArray prices = new JSONArray();
-				JSONObject price = new JSONObject();
-				Double priceInd = null;
 				prices = route.getJSONArray("indicativePrices");
-				if (prices != null && prices.length() != 0) {
-					price = (JSONObject) prices.get(0);
-					// price
-					priceInd = price.getDouble("price");
-				}
+				JSONObject price = (JSONObject) prices.get(0);
+
+				// price
+				Double priceInd = price.getDouble("price");
 
 				// distance
 				Double distance = route.getDouble("distance");
@@ -64,27 +69,6 @@ public class Rome2RioAPIWrapper {
 				// agencies
 				JSONArray agencies = new JSONArray();
 				agencies = jsonObj.getJSONArray("agencies");
-
-				// from
-				int from = (int) route.getLong("depPlace");
-
-				JSONObject placeFrom = places.getJSONObject(from);
-				double fromLat = placeFrom.getDouble("lat");
-				double fromLng = placeFrom.getDouble("lng");
-
-				// to
-				int to = (int) route.getLong("arrPlace");
-				JSONObject placeTo = places.getJSONObject(to);
-				double toLat = placeTo.getDouble("lat");
-				double toLng = placeTo.getDouble("lng");
-
-				// changes
-				JSONArray changes = new JSONArray();
-				changes = route.getJSONArray("segments");
-				int number_changes = -1;
-				for (int j = 0; j < changes.length(); j++) {
-					number_changes++;
-				}
 
 				// Segments Creation
 				ArrayList<Segment> segments = new ArrayList<Segment>();
@@ -122,8 +106,9 @@ public class Rome2RioAPIWrapper {
 					segments.add(newSegment);
 				}
 
-				TripAlternative alternative = new TripAlternative(mean,
-						priceInd, distance, duration, segments, number_changes);
+				TripAlternativeRome2Rio alternative = new TripAlternativeRome2Rio(
+						i, mean, priceInd, duration, distance, segments,
+						number_changes);
 				alternatives.add(alternative);
 
 			}

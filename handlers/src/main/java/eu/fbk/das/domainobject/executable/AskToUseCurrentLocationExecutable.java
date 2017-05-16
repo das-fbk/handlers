@@ -1,7 +1,5 @@
 package eu.fbk.das.domainobject.executable;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.TravelAssistantBot;
@@ -12,11 +10,10 @@ import eu.fbk.das.process.engine.api.domain.ConcreteActivity;
 import eu.fbk.das.process.engine.api.domain.ProcessActivity;
 import eu.fbk.das.process.engine.api.domain.ProcessDiagram;
 
+//class to ask in which way the user declares its current location
+// MANAUL or GEOLOCALIZED
 public class AskToUseCurrentLocationExecutable extends
 		AbstractExecutableActivityInterface {
-
-	private static final Logger logger = LogManager
-			.getLogger(InsertDestinationExecutable.class);
 
 	private ProcessEngine pe;
 	private TravelAssistantBot bot;
@@ -33,11 +30,6 @@ public class AskToUseCurrentLocationExecutable extends
 				.getCurrentActivity();
 
 		DomainObjectInstance doi = pe.getDomainObjectInstance(proc);
-		ProcessDiagram process = doi.getProcess();
-
-		// se l'utente ha selezionato la localizzazione automatica
-		// oppure vuol inserire la FROM manualmente
-		// l'attivita' viene eseguita
 
 		if (bot.getCurrentLocation()) {
 			// From location calculated automatically
@@ -50,7 +42,6 @@ public class AskToUseCurrentLocationExecutable extends
 		} else if (bot.getManualLocation()) {
 			// From will be inserted manually by the user
 			currentConcrete.setExecuted(true);
-			// pe.stepAll();
 		}
 
 		return;

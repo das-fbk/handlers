@@ -26,7 +26,7 @@ public class Current {
 		menus.put(chatId, new User(menu, language));
 	}
 
-	static void setMenu(long chatId, Menu menu) {
+	public static void setMenu(long chatId, Menu menu) {
 		if (!menus.containsKey(chatId))
 			menus.put(chatId, new User());
 		setUser(chatId, menu, menus.get(chatId).language);

@@ -59,6 +59,11 @@
             <artifactId>json</artifactId>
             <version>20160212</version>
         </dependency>
+         <dependency>
+        <groupId>se.walkercrou</groupId>
+        <artifactId>google-places-api-java</artifactId>
+        <version>2.1.2</version>
+    </dependency>
 <!--        <dependency> -->
 <!--             <groupId>com.github.rubenlagus</groupId> -->
 <!--             <artifactId>TelegramBots</artifactId> -->

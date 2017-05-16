@@ -18,26 +18,23 @@ import java.awt.event.ActionListener;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
-import org.telegram.telegrambots.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
-import org.telegram.telegrambots.api.methods.send.SendVenue;
-import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.api.objects.CallbackQuery;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
-import eu.fbk.das.domainobject.executable.utils.TripAlternative;
+import eu.fbk.das.domainobject.executable.utils.BlaBlaCar.TripAlternativeBlaBlaCar;
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Current;
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Database;
+import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Menu;
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Texts;
 import eu.fbk.das.domainobject.executable.utils.GoogleAPI.GoogleAPIWrapper;
+import eu.fbk.das.domainobject.executable.utils.Rome2Rio.TripAlternativeRome2Rio;
 
 /**
  * Created by antbucc
@@ -58,6 +55,22 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 	private String currentDate;
 	private Boolean optionalDataDefined;
 	private String ChoosenAlternative;
+	private String ChoosenRevisedFromAddress;
+	ArrayList<TripAlternativeRome2Rio> romeToRioAlternatives;
+
+	public ArrayList<TripAlternativeRome2Rio> getRomeToRioAlternatives() {
+		return romeToRioAlternatives;
+	}
+
+	public void setRomeToRioAlternatives(
+			ArrayList<TripAlternativeRome2Rio> romeToRioAlternatives) {
+		this.romeToRioAlternatives = romeToRioAlternatives;
+	}
+
+	ArrayList<TripAlternativeBlaBlaCar> blaBlaCarAlternatives;
+
+	private String ChoosenRevisedToAddress;
+
 	private ActionListener aListner;
 	private ActionEvent event;
 
@@ -104,7 +117,7 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 
 	private void handleIncomingCallbackQuery(CallbackQuery cbq)
 			throws TelegramApiException, ExecutionException {
-		Message message = cbq.getMessage();
+		// Message message = cbq.getMessage();
 		/*
 		 * if (message.getText().startsWith(AUTOBUSCOMMAND)) autobusEdit(cbq);
 		 * else if (message.getText().startsWith(TRAINSCOMMAND)) {
@@ -112,15 +125,10 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 		 */
 	}
 
-	private final ConcurrentHashMap<Integer, Integer> userState = new ConcurrentHashMap<>();
-
-	// Incoming Messages Handler
-
 	// Incoming Messages Handler
 	private void handleIncomingTextMessage(Message message)
 			throws TelegramApiException, ExecutionException {
 		System.out.println(message);
-		int pid = 0;
 		Long chatId = message.getChatId();
 
 		Integer userID = message.getFrom().getId();
@@ -136,6 +144,7 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 			break;
 
 		case STARTCOMMAND:
+
 			// sendMessageDefault(message, keyboardStart(chatId),
 			// textStart(Current.getLanguage(chatId)));
 			// update hasmap (bot, chatID)
@@ -151,11 +160,11 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 			// Manual definition of the FROM location
 			// set first the user choice to insert manual source
 			this.setManualLocation(true);
-			sendMessageDefault(
+			this.sendMessageDefault(
 					message,
 					keyboardAskFromManual(chatId,
 							Database.getRome2RioDestination()),
-					"Inserisci la citta' di partenza");
+					Texts.textSource(Current.getLanguage(chatId)));
 			launchEffect();
 			break;
 
@@ -166,14 +175,11 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 			switch (Current.getMenu(chatId)) {
 			// menu messages
 			case START:
-				sendMessageDefault(
+				this.sendMessageDefault(
 						message,
 						keyboardAskFrom(chatId,
 								Database.getRome2RioDestination()),
-						"Benvenuto nel tuo assistente di viaggio virtuale. Per iniziare seleziona  "
-								+ "una delle due alternative");
-				// System.out.println("qui inizi il chat bot");
-				// memorize ChatID Started
+						Texts.textWelcome(Current.getLanguage(chatId)));
 				this.setStartReceived(true);
 
 				launchEffect();
@@ -182,10 +188,11 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 			case FROMMANUAL:
 				this.setStart(message.getText());
 				this.setSourceReceived(true);
-				sendMessageDefault(
+				this.sendMessageDefault(
 						message,
 						keyboardAskTo(chatId, Database.getRome2RioDestination()),
-						"Ora inserisci la citta' di destinazione");
+						Texts.textDestination(Current.getLanguage(chatId)));
+
 				this.setCurrentID(chatId);
 
 				launchEffect();
@@ -199,7 +206,7 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 				sendMessageDefault(
 						message,
 						keyboardAskTo(chatId, Database.getRome2RioDestination()),
-						"Ora inserisci la citta' di destinazione");
+						Texts.textDestination(Current.getLanguage(chatId)));
 				this.setCurrentID(chatId);
 
 				launchEffect();
@@ -214,7 +221,7 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 						message,
 						keyboardAskDetails(chatId,
 								Database.getRome2RioDestination()),
-						"VUOI DEFINIRE I DETTAGLI DEL TUO VIAGGIO?");
+						Texts.textDetails(Current.getLanguage(chatId)));
 
 				this.setCurrentID(chatId);
 				launchEffect();
@@ -252,7 +259,7 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 							message,
 							keyboardCalcola(chatId,
 									Database.getRome2RioDestination()),
-							"--- CALCOLO ALTERNATIVE IN CORSO ---");
+							"--- Route planning in progress ---");
 
 				} else if (option.equalsIgnoreCase("NO")) {
 					// here we define defaultData
@@ -281,15 +288,31 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 							message,
 							keyboardCalcola(chatId,
 									Database.getRome2RioDestination()),
-							"--- CALCOLO ALTERNATIVE IN CORSO ---");
+							Texts.textRoutePlanning(Current.getLanguage(chatId)));
 
 				} else {
 					// choosen trip received
+					// System.out.println(message.getMessageId());
+
+					// ....qui dovresti vedere l'indice del messaggio
+					// selezionato....
 					this.setChoosenAlternative(message.getText());
 
 				}
 				launchEffect();
 				break;
+			case REFINEFROMADDRESS:
+				String fromAddress = message.getText();
+				this.setChoosenRevisedFromAddress(fromAddress);
+				Current.setMenu(chatId, Menu.REFINETOADDRESS);
+				break;
+			case REFINETOADDRESS:
+
+				String toAddress = message.getText();
+				this.setChoosenRevisedToAddress(toAddress);
+				// Current.setMenu(chatId, Menu.REFINETOADDRESS);
+				break;
+
 			case CALCOLA:
 				this.setResultsReceived(true);
 				this.setCurrentID(chatId);
@@ -389,65 +412,17 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 				 * textRome2RioCalcola(Current.getLanguage(chatId)));
 				 */
 				break;
-			// case CALCOLA:
-			/*
-			 * ArrayList<TripAlternative> alternatives1 = new
-			 * ArrayList<TripAlternative>(); // qui dovresti selezionare o
-			 * Rome2Rio o ViaggiaTrento in base // alla proximity if
-			 * (this.getProximity().equals("globale")) {
-			 * 
-			 * Rome2RioAPIWrapper rome2RioWrapper = new Rome2RioAPIWrapper();
-			 * 
-			 * boolean nontrovate1 = true;
-			 * 
-			 * String from1 = this.getStart(); String to1 =
-			 * this.getDestination(); alternatives1 =
-			 * rome2RioWrapper.getRome2RioAlternatives( from1, to1);
-			 * 
-			 * if (alternatives1.size() != 0) { // visualizzo le alternative
-			 * come bottoni sendMessageDefault(message,
-			 * keyboardRome2RioResult(chatId, alternatives1),
-			 * textRome2RioResult(Current.getLanguage(chatId))); nontrovate1 =
-			 * false; }
-			 * 
-			 * } else { // ask more informations before to call the Viaggia
-			 * Trento // Service sendMessageDefault( message,
-			 * keyboardAskTo(chatId, Database.getRome2RioDestination()),
-			 * textStartRome2RioDestination(Current .getLanguage(chatId)));
-			 * 
-			 * }
-			 */
 
-			// break;
 			}
 		}
-	}
-
-	private String calculateProximity(String start, String destination) {
-		// TODO Auto-generated method stub
-		String result = "";
-
-		if (start.contains("trento") || destination.contains("rovereto")) {
-			result = "locale";
-
-		} else {
-			result = "globale";
-		}
-
-		return result;
 	}
 
 	private void handleIncomingPositionMessage(Message message)
 			throws TelegramApiException, ExecutionException {
 
-		Long chatId = message.getChatId();
-
-		// memorizza la lat e long dell'utente
 		this.setLat(message.getLocation().getLatitude());
 		this.setLongit(message.getLocation().getLongitude());
 		System.out.println(Current.getMenu(message.getChatId()));
-
-		// qui calcola la posizione corrente usando il wrapper di Google API
 
 		GoogleAPIWrapper googleAPI = new GoogleAPIWrapper();
 		String indirizzo = googleAPI
@@ -471,49 +446,18 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 
 	// endregion handlers
 
-	// region voids
-
-	private void error(Message message) throws TelegramApiException {
-		sendMessageDefaultWithReply(message, null,
-				Texts.textError(Current.getLanguage(message.getChatId())));
-	}
-
-	// endregion voids
-
-	// region utilities
-
-	private void answerCallbackQuery(CallbackQuery cbq, String aCbqText)
+	public void sendMessageDefault(ReplyKeyboard keyboard, String text)
 			throws TelegramApiException {
-		AnswerCallbackQuery aCbq = new AnswerCallbackQuery();
-		aCbq.setCallbackQueryId(cbq.getId());
-		aCbq.setText(aCbqText);
-		answerCallbackQuery(aCbq);
-	}
-
-	private void editMessageDefault(Message message,
-			InlineKeyboardMarkup keyboard, String messageText)
-			throws TelegramApiException {
-		EditMessageText edit = new EditMessageText();
-		edit.enableMarkdown(true);
-		edit.setMessageId(message.getMessageId());
-		edit.setChatId(message.getChatId().toString());
-		edit.setText(messageText);
-		edit.setReplyMarkup(keyboard);
-		editMessageText(edit);
-	}
-
-	private void sendMessageDefaultWithReply(Message message,
-			ReplyKeyboard keyboard, String text) throws TelegramApiException {
 		SendMessage sendMessage = new SendMessage().setChatId(
-				message.getChatId().toString()).enableMarkdown(true);
+				this.getCurrentID()).enableMarkdown(true);
+
 		sendMessage.setText(text);
 		sendMessage.setReplyMarkup(keyboard);
-		sendMessage.setReplyToMessageId(message.getMessageId());
+		this.sendMessage(sendMessage);
 
-		sendMessage(sendMessage);
 	}
 
-	private void sendMessageDefault(Message message, ReplyKeyboard keyboard,
+	public void sendMessageDefault(Message message, ReplyKeyboard keyboard,
 			String text) throws TelegramApiException {
 		SendMessage sendMessage = new SendMessage().setChatId(
 				message.getChatId().toString()).enableMarkdown(true);
@@ -537,21 +481,19 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 
 	}
 
-	private void sendMessageDefault(Message message, String text)
+	public void sendMessageDefault(Message message, String text)
 			throws TelegramApiException {
 		sendMessageDefault(message, null, text);
 	}
 
-	private void sendVenueDefault(Message message, Float latitude,
-			Float longitude) throws TelegramApiException {
-		SendVenue sendVenue = new SendVenue().setChatId(message.getChatId()
-				.toString());
-		sendVenue.setLatitude(latitude);
-		sendVenue.setLongitude(longitude);
-
-		sendVenue(sendVenue);
-	}
-
+	/*
+	 * private void sendVenueDefault(Message message, Float latitude, Float
+	 * longitude) throws TelegramApiException { SendVenue sendVenue = new
+	 * SendVenue().setChatId(message.getChatId() .toString());
+	 * sendVenue.setLatitude(latitude); sendVenue.setLongitude(longitude);
+	 * 
+	 * sendVenue(sendVenue); }
+	 */
 	// endregion utilities
 
 	public String getChoosenAlternative() {
@@ -595,7 +537,7 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 	}
 
 	private String DepartureTime;
-	private String TransportType;
+	// private String TransportType;
 	private String RouteType;
 
 	public Boolean getCurrentLocation() {
@@ -646,13 +588,23 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 		this.currentChatId = currentChatId;
 	}
 
-	ArrayList<TripAlternative> alternatives = new ArrayList<TripAlternative>();
+	ArrayList<TripAlternativeRome2Rio> alternatives = new ArrayList<TripAlternativeRome2Rio>();
+	ArrayList<TripAlternativeBlaBlaCar> alternativesBlaBlaCar = new ArrayList<TripAlternativeBlaBlaCar>();
 
-	public ArrayList<TripAlternative> getAlternatives() {
+	public ArrayList<TripAlternativeBlaBlaCar> getAlternativesBlaBlaCar() {
+		return alternativesBlaBlaCar;
+	}
+
+	public void setAlternativesBlaBlaCar(
+			ArrayList<TripAlternativeBlaBlaCar> alternativesBlaBlaCar) {
+		this.alternativesBlaBlaCar = alternativesBlaBlaCar;
+	}
+
+	public ArrayList<TripAlternativeRome2Rio> getAlternatives() {
 		return alternatives;
 	}
 
-	public void setAlternatives(ArrayList<TripAlternative> alternatives) {
+	public void setAlternatives(ArrayList<TripAlternativeRome2Rio> alternatives) {
 		this.alternatives = alternatives;
 	}
 
@@ -777,20 +729,48 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 		return token;
 	}
 
-	private int getRunningProcess() {
-		int runningPid = 4;
-		// Map<Integer, ProcessDiagram> processes = this.processEngine
-		// .getProcesses();
-		// for (ProcessDiagram p : processes.values()) {
-		// if (p.isRunning()) {
-		// runningPid = p.getpid();
-		// }
-		// }
-		return runningPid;
+	public String getChoosenRevisedFromAddress() {
+		return ChoosenRevisedFromAddress;
+	}
+
+	public void setChoosenRevisedFromAddress(String choosenRevisedFromAddress) {
+		ChoosenRevisedFromAddress = choosenRevisedFromAddress;
+	}
+
+	public String getChoosenRevisedToAddress() {
+		return ChoosenRevisedToAddress;
+	}
+
+	public void setChoosenRevisedToAddress(String choosenRevisedToAddress) {
+		ChoosenRevisedToAddress = choosenRevisedToAddress;
 	}
 
 	private void launchEffect() {
 		aListner.actionPerformed(event);
+	}
+
+	public void setBlaBlaCarAlternatives(
+			ArrayList<TripAlternativeBlaBlaCar> blaBlaCarAlternatives) {
+		this.alternativesBlaBlaCar = blaBlaCarAlternatives;
+
+	}
+
+	public void sendMessageAlternativeAddresses(ReplyKeyboard keyboard,
+			String text) {
+		SendMessage sendMessage = new SendMessage().setChatId(getCurrentID())
+				.enableMarkdown(true);
+
+		String textNew = text.concat("Select the right destination address!");
+
+		sendMessage.setText(textNew);
+		sendMessage.setReplyMarkup(keyboard);
+		try {
+			sendMessage(sendMessage);
+		} catch (TelegramApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 }

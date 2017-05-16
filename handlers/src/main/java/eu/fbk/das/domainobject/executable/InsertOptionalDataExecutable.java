@@ -33,11 +33,10 @@ public class InsertOptionalDataExecutable extends
 				.getCurrentActivity();
 
 		DomainObjectInstance doi = pe.getDomainObjectInstance(proc);
-		ProcessDiagram process = doi.getProcess();
 
 		// check if the optional Data has been inserted by the user
 		if (bot.getOptionalDataDefined()) {
-			logger.debug("Bot received Optional Data for a journey");
+			logger.info("Bot received Optional Data for a journey");
 			Element date = doi.getStateVariableContentByName("Date");
 			date.setTextContent(bot.getCurrentDate());
 			doi.setStateVariableContentByVarName("Date", date);

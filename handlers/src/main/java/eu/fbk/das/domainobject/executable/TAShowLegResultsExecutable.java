@@ -1,16 +1,15 @@
 package eu.fbk.das.domainobject.executable;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.w3c.dom.Element;
 
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.TravelAssistantBot;
-import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Travel;
+import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Current;
+import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards;
+import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Texts;
 import eu.fbk.das.process.engine.api.AbstractExecutableActivityInterface;
 import eu.fbk.das.process.engine.api.DomainObjectInstance;
 import eu.fbk.das.process.engine.api.ProcessEngine;
@@ -22,19 +21,21 @@ import eu.fbk.das.process.engine.api.jaxb.VariableType;
 public class TAShowLegResultsExecutable extends
 		AbstractExecutableActivityInterface {
 
-	private static final Logger logger = LogManager
-			.getLogger(TAShowLegResultsExecutable.class);
-
 	private ProcessEngine pe;
 	private TravelAssistantBot bot;
 
-	// bot elements
-	public static final String PRICE = "\u2193" + "\ud83d\udcb5";
-	public static final String TIME = "\u2193" + "\u23f3";
-	public static final String CHANGES = "\u2193" + "\u0058";
-	public static final String DISTANCE = "\u2193" + "\u33ce";
+	public static final String PRICE = "\u0024"; // \ud83d\udcb5
+	public static final String TIME = "\u231a";
+	public static final String CHANGES = "\u25cf" + "\u25cb" + "\u25cf";
+	public static final String DISTANCE = "\u21e5";
 
-	private static ArrayList<Travel> travels;
+	public static final String DATEHOUR = "\ud83d\udcc5";
+	public static final String RIDERRATING = "\u2b50";
+
+	public static final String ROME2RIO = "ROME2RIO";
+	public static final String BLABLACAR = "BLABLACAR";
+
+	public static final String CALCOLA = "\ud83d\udd0d" + "CALCOLA";
 
 	// end bot elements
 
@@ -50,7 +51,6 @@ public class TAShowLegResultsExecutable extends
 				.getCurrentActivity();
 
 		DomainObjectInstance doi = pe.getDomainObjectInstance(proc);
-		ProcessDiagram process = doi.getProcess();
 
 		// get the domain object state
 		List<VariableType> doiState = doi.getState().getStateVariable();
@@ -59,7 +59,6 @@ public class TAShowLegResultsExecutable extends
 			// retrieve the result list from the service
 			Element result = doi.getStateVariableContentByName("PlanList");
 			if (result.getFirstChild() != null) {
-				String resultValue = result.getFirstChild().getNodeValue();
 
 				// send PLAN to the user
 
@@ -68,11 +67,17 @@ public class TAShowLegResultsExecutable extends
 
 				Long id = bot.getCurrentID();
 
-				String idString = id.toString();
-				sendMessage.setChatId(idString);
+				// send results to the user
+				try {
+					bot.sendMessageDefault(Keyboards.keyboardBlaBlaCarResult(
+							id, bot.getAlternativesBlaBlaCar(), "NULL"), Texts
+							.textBlaBlaCarResult(Current.getLanguage(id),
+									Keyboards.getDifferentWayTravelBlaBlaCar(),
+									""));
+				} catch (TelegramApiException e) {
 
-				// send alternatives to the user
-				sendMessageHTML(resultValue);
+					e.printStackTrace();
+				}
 
 			}
 
@@ -81,16 +86,4 @@ public class TAShowLegResultsExecutable extends
 		return;
 	}
 
-	private void sendMessageHTML(String link) {
-
-		SendMessage message1 = new SendMessage().setChatId(
-				bot.getCurrentID().toString()).enableHtml(true);
-
-		message1.setText("<a href='" + link + "'>RIDE 1</a>");
-		try {
-			bot.sendMessage(message1); // Sending our message object to user
-		} catch (TelegramApiException e) {
-			e.printStackTrace();
-		}
-	}
 }

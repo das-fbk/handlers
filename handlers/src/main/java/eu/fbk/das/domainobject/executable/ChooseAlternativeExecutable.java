@@ -2,13 +2,11 @@ package eu.fbk.das.domainobject.executable;
 
 import java.util.ArrayList;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 
-import eu.fbk.das.domainobject.executable.utils.Segment;
-import eu.fbk.das.domainobject.executable.utils.TripAlternative;
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.TravelAssistantBot;
+import eu.fbk.das.domainobject.executable.utils.Rome2Rio.Segment;
+import eu.fbk.das.domainobject.executable.utils.Rome2Rio.TripAlternativeRome2Rio;
 import eu.fbk.das.process.engine.api.AbstractExecutableActivityInterface;
 import eu.fbk.das.process.engine.api.DomainObjectInstance;
 import eu.fbk.das.process.engine.api.ProcessEngine;
@@ -18,9 +16,6 @@ import eu.fbk.das.process.engine.api.domain.ProcessDiagram;
 
 public class ChooseAlternativeExecutable extends
 		AbstractExecutableActivityInterface {
-
-	private static final Logger logger = LogManager
-			.getLogger(InsertDestinationExecutable.class);
 
 	private ProcessEngine pe;
 	private TravelAssistantBot bot;
@@ -37,7 +32,6 @@ public class ChooseAlternativeExecutable extends
 				.getCurrentActivity();
 
 		DomainObjectInstance doi = pe.getDomainObjectInstance(proc);
-		ProcessDiagram process = doi.getProcess();
 
 		Element choice = doi.getStateVariableContentByName("ChosenPlan");
 		System.out.println(bot.getChoosenAlternative());
@@ -46,21 +40,15 @@ public class ChooseAlternativeExecutable extends
 		doi.setStateVariableContentByVarName("ChosenPlan", choice);
 
 		if (bot.getChoosenAlternative() != null) {
-
-			// Split the alternative String to retrieve the index selected
-			String[] parts = bot.getChoosenAlternative().split("-");
-			String index = parts[0];
-			int indexValue = Integer.parseInt(index);
-
-			// retrieve the right alternative from the global variable
-			System.out.println("ALTERNATIVE: " + bot.getAlternatives().size());
-			TripAlternative alternative = bot.getAlternatives().get(indexValue);
+			TripAlternativeRome2Rio alternative = this
+					.getR2RAlternative(bot.getRomeToRioAlternatives(),
+							bot.getChoosenAlternative());
 
 			Element goalHOAA = doi
 					.getStateVariableContentByName("HOAAPlanGoal");
 			String extractedString = generateOverallString(alternative
 					.getSegments());
-			// String extractedString = "train-bus";
+
 			goalHOAA.setTextContent(extractedString);
 
 			// save result in response variable
@@ -68,9 +56,24 @@ public class ChooseAlternativeExecutable extends
 			doi.setStateVariableContentByVarName("HOAAPlanGoal", goalHOAA);
 
 			currentConcrete.setExecuted(true);
-			// pe.stepAll();
 		}
 		return;
+	}
+
+	private TripAlternativeRome2Rio getR2RAlternative(
+			ArrayList<TripAlternativeRome2Rio> romeToRioAlternatives,
+			String choosenAlternative) {
+		TripAlternativeRome2Rio result = null;
+
+		for (int i = 0; i < romeToRioAlternatives.size(); i++) {
+			TripAlternativeRome2Rio current = romeToRioAlternatives.get(i);
+			String mean = current.getMean();
+			if (choosenAlternative.contains(mean)) {
+				result = current;
+				break;
+			}
+		}
+		return result;
 	}
 
 	private String generateOverallString(ArrayList<Segment> segments) {

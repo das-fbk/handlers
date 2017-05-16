@@ -4,7 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 
-import eu.fbk.das.domainobject.executable.utils.BotTelegram.TravelAssistantBot;
 import eu.fbk.das.process.engine.api.AbstractExecutableActivityInterface;
 import eu.fbk.das.process.engine.api.DomainObjectInstance;
 import eu.fbk.das.process.engine.api.ProcessEngine;
@@ -12,19 +11,19 @@ import eu.fbk.das.process.engine.api.domain.ConcreteActivity;
 import eu.fbk.das.process.engine.api.domain.ProcessActivity;
 import eu.fbk.das.process.engine.api.domain.ProcessDiagram;
 
-public class InsertDestinationExecutable extends
+public class TAHandleLegResultsExecutable extends
 		AbstractExecutableActivityInterface {
 
 	private static final Logger logger = LogManager
-			.getLogger(InsertDestinationExecutable.class);
+			.getLogger(TAHandleLegResultsExecutable.class);
 
 	private ProcessEngine pe;
-	private TravelAssistantBot bot;
+	private static String SCOPE_PREFIX = new String();
 
-	public InsertDestinationExecutable(ProcessEngine processEngine,
-			TravelAssistantBot bot) {
+	// private static String HOSTING_INSTANCE_NAME = new String();
+
+	public TAHandleLegResultsExecutable(ProcessEngine processEngine) {
 		this.pe = processEngine;
-		this.bot = bot;
 	}
 
 	@Override
@@ -34,18 +33,19 @@ public class InsertDestinationExecutable extends
 
 		DomainObjectInstance doi = pe.getDomainObjectInstance(proc);
 
-		if (bot.getDestinationReceived()) {
-			// set activity to executed
-			logger.info("Bot received Destination Info");
+		if (pe.checkVarCondition("isInScope", "true", doi.getProcess())) {
+			SCOPE_PREFIX = (pe.getVariablesFor(doi.getProcess(), "scopePrefix"))
+					.getValue();
+			// HOSTING_INSTANCE_NAME = (pe.getVariablesFor(doi.getProcess(),
+			// "doInstanceName")).getValue();
+			Element elemResultList = doi
+					.getStateVariableContentByName(SCOPE_PREFIX + "."
+							+ "ResultList");
+			Element el = doi.getStateVariableContentByName("PlannerOutput");
+			el.setTextContent(elemResultList.getFirstChild().getNodeValue());
 
-			// update the TO variable value
-			Element to = doi.getStateVariableContentByName("To");
-			to.setTextContent(bot.getDestination());
-			// save result in response variable
-			doi.setStateVariableContentByVarName("To", to);
 			currentConcrete.setExecuted(true);
+			return;
 		}
-
-		return;
 	}
 }

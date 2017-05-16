@@ -1,7 +1,5 @@
 package eu.fbk.das.domainobject.executable;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.TravelAssistantBot;
@@ -14,9 +12,6 @@ import eu.fbk.das.process.engine.api.domain.ProcessDiagram;
 
 public class UserInsertSourceLocationExecutable extends
 		AbstractExecutableActivityInterface {
-
-	private static final Logger logger = LogManager
-			.getLogger(InsertDestinationExecutable.class);
 
 	private ProcessEngine pe;
 	private TravelAssistantBot bot;
@@ -33,7 +28,6 @@ public class UserInsertSourceLocationExecutable extends
 				.getCurrentActivity();
 
 		DomainObjectInstance doi = pe.getDomainObjectInstance(proc);
-		ProcessDiagram process = doi.getProcess();
 
 		if (bot.getCurrentLocation()) {
 			// From location calculated automatically and already memorized.

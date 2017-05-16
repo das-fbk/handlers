@@ -55,6 +55,8 @@ public class TAidentifyLegExecutable extends
 						"GeneratedAbstract")) {
 					scopeName = fatherAct.getName();
 					// TODO: eliminare get(0) e cercare la variabile per nome
+					// (perchè contiene solo la variabile LegDetails, in
+					// posizione 0)
 					leg = ((Element) fatherAct.getActionVariables().get(0)
 							.getContent()).getFirstChild().getNodeValue();
 				}
@@ -62,6 +64,13 @@ public class TAidentifyLegExecutable extends
 		}
 
 		DomainObjectInstance doi = pe.getDomainObjectInstance(proc);
+		// the host process is the process of the DO in which the HOAA is in
+		// execution
+		ProcessDiagram hostProcess = doi.getProcess();
+		// we set the process variables to be used by the DataViewer
+		pe.addProcVar(hostProcess, "isInScope", "true");
+		pe.addProcVar(hostProcess, "scopePrefix", hoaaName + hoaaCounter);
+		// pe.addProcVar(hostProcess, "doInstanceName", doi.getId());
 
 		if (leg == null || leg.isEmpty() || leg.equals("")) {
 			logger.error("Variable leg not found! ");
@@ -97,7 +106,7 @@ public class TAidentifyLegExecutable extends
 		// hoaaCounter++;
 		/***************** END: build abstract activity with goal in AND *********************/
 
-		// extend current processes with hoaas
+		// extend current process with hoaas
 		int target = currentAbstract.getTarget();
 		for (AbstractActivity activity : result) {
 			proc.getActivities().add(target, activity);
@@ -133,7 +142,7 @@ public class TAidentifyLegExecutable extends
 				.getTransportationMode(mean.toLowerCase());
 		switch (transportMode) {
 		case "train":
-			return Optional.of(buildLocal(doi, source, target, mean, company,
+			return Optional.of(buildGlobal(doi, source, target, mean, company,
 					departure, destination));
 		case "bus":
 			return Optional.of(buildGlobal(doi, source, target, mean, company,
@@ -204,34 +213,6 @@ public class TAidentifyLegExecutable extends
 		return act;
 	}
 
-	private AbstractActivity buildLocal(DomainObjectInstance doi, int source,
-			int target, String mean, String company, String departure,
-			String destination) {
-		GoalType goal = new GoalType();
-		Point point = new Point();
-		DomainProperty dp = new DomainProperty();
-		dp.setDpName("LocalPlanner");
-		dp.getState().add("LOCAL_ALTERNATIVES_SENT");
-		point.getDomainProperty().add(dp);
-		goal.getPoint().add(point);
-		AbstractActivity act = new AbstractActivity(source, target, hoaaName
-				+ hoaaCounter, goal);
-		act.setAbstract(true);
-		act.setAbstractType("GeneratedAbstract");
-		hoaaCounter++;
-
-		// setting the variables for the generated abstract activity
-		// List<VariableType> actionVariable = buildActionVariables(act,
-		// departure, destination);
-		// act.setActionVariables(actionVariable);
-		// update the doi state with the variables belonging to the new
-		// generated abstract activity
-		// updateDoiState(doi, actionVariable);
-		// extend knowledge with external knowledge of domain property
-		pe.addExternalKnowledge(doi, dp.getDpName(), "INITIAL");
-		return act;
-	}
-
 	private List<VariableType> buildActionVariables(AbstractActivity activity,
 			String mean, String company, String departure, String destination) {
 		String varPrefix = activity.getName() + ".";
@@ -276,34 +257,4 @@ public class TAidentifyLegExecutable extends
 			}
 		}
 	}
-
-	// private String extractLegDetails(DomainObjectInstance doi) {
-	// String result = "";
-	// String scope = scopeName + ".";
-	// // obtain variable Mean
-	// Element mean = doi.getStateVariableContentByName(scope + "Mean");
-	// if (mean.getFirstChild() != null) {
-	// result = result + mean.getFirstChild().getNodeValue();
-	// }
-	//
-	// // obtain variable Company
-	// Element company = doi.getStateVariableContentByName(scope + "Company");
-	// if (company.getFirstChild() != null) {
-	// result = result + ";" + company.getFirstChild().getNodeValue();
-	// }
-	//
-	// // obtain variable Source
-	// Element source = doi.getStateVariableContentByName(scope + "Source");
-	// if (source.getFirstChild() != null) {
-	// result = result + ";" + source.getFirstChild().getNodeValue();
-	// }
-	//
-	// // obtain variable Destination
-	// Element destination = doi.getStateVariableContentByName(scope
-	// + "Destination");
-	// if (destination.getFirstChild() != null) {
-	// result = result + ";" + destination.getFirstChild().getNodeValue();
-	// }
-	// return result;
-	// }
 }
