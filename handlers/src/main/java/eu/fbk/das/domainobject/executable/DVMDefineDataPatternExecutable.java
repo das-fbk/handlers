@@ -57,79 +57,62 @@ public class DVMDefineDataPatternExecutable extends
 					.getStateVariableContentByName("PlannerOutput");
 			String planOutValue = planOut.getFirstChild().getNodeValue();
 
-			/****************** AD HOC - ANDRA ELIMINATO ************************************/
-			// if (pe.checkVarCondition("isInScope", "true", doi.getProcess()))
-			// {
-			// SCOPE_PREFIX = (pe.getVariablesFor(doi.getProcess(),
-			// "scopePrefix")).getValue();
-			// HOSTING_INSTANCE_NAME = (pe.getVariablesFor(doi.getProcess(),
-			// "doInstanceName")).getValue();
-			// Element elemResultList = doi
-			// .getStateVariableContentByName(SCOPE_PREFIX + "."
-			// + "ResultList");
-			// Element el = doi.getStateVariableContentByName("PlannerOutput");
-			// el.setTextContent(elemResultList.getFirstChild().getNodeValue());
-			// planOutValue = elemResultList.getFirstChild().getNodeValue();
-			// } else {
-			// planOutValue = planOut.getFirstChild().getNodeValue();
-			// }
-
-			// if (planOutValue.equals("")) {
-			// List<DomainObjectInstance> dois = pe.getDomainObjectInstances();
-			// for (DomainObjectInstance current : dois) {
-			// if (current.getId().equals("User_1")) {
-			// Element elemResultList = current
-			// .getStateVariableContentByName("TA_IdentifyLeg-1.ResultList");
-			// Element el = current
-			// .getStateVariableContentByName("PlannerOutput");
-			// el.setTextContent(elemResultList.getFirstChild()
-			// .getNodeValue());
-			// planOutValue = elemResultList.getFirstChild()
-			// .getNodeValue();
-			// }
-			// }
-			// }
-			/******************************************************************************/
-
 			// extract the current mobility Service (i.e., Rome2Rio,BlaBlaCar,
 			// etc..
-			String[] parts = planOutValue.split("<>");
-			String service = (String) parts[0];
-			String PlannerOutputValue = parts[1];
-			if (service.equalsIgnoreCase("Rome2Rio")) {
-				JSONObject jsonObj = new JSONObject(PlannerOutputValue);
+			if (planOutValue != null && !planOutValue.isEmpty()) {
+				String[] parts = planOutValue.split("<>");
+				String service = (String) parts[0];
+				String PlannerOutputValue = parts[1];
+				if (service.equalsIgnoreCase("Rome2Rio")) {
+					JSONObject jsonObj = new JSONObject(PlannerOutputValue);
 
-				String planList = extractPlanListOfRome2Rio(jsonObj);
+					String planList = extractPlanListOfRome2Rio(jsonObj);
 
-				// update the PlanList variable value
+					// update the PlanList variable value
+					Element planElement = doi
+							.getStateVariableContentByName("PlanList");
+					planElement.setTextContent(planList);
+					// save result in response variable
+					doi.setStateVariableContentByVarName("PlanList",
+							planElement);
+					// memorize the DataPattern in to the variable
+					Element dataPatternElement = doi
+							.getStateVariableContentByName("DataPattern");
+					dataPatternElement.setTextContent("Rome2Rio");
+					// save result in response variable
+					doi.setStateVariableContentByVarName("DataPattern",
+							dataPatternElement);
+				} else if (service.equalsIgnoreCase("BlaBlaCar")) {
+					// update the PlanList variable value
+					Element planElement = doi
+							.getStateVariableContentByName("PlanList");
+					planElement.setTextContent(PlannerOutputValue);
+					// save result in response variable
+					doi.setStateVariableContentByVarName("PlanList",
+							planElement);
+
+					// memorize the DataPattern in to the variable
+					Element dataPatternElement = doi
+							.getStateVariableContentByName("DataPattern");
+					dataPatternElement.setTextContent("BlaBlaCar");
+					// save result in response variable
+					doi.setStateVariableContentByVarName("DataPattern",
+							dataPatternElement);
+				}
+			} else {
 				Element planElement = doi
 						.getStateVariableContentByName("PlanList");
-				planElement.setTextContent(planList);
+				planElement.setTextContent("");
 				// save result in response variable
 				doi.setStateVariableContentByVarName("PlanList", planElement);
+
 				// memorize the DataPattern in to the variable
 				Element dataPatternElement = doi
 						.getStateVariableContentByName("DataPattern");
-				dataPatternElement.setTextContent("Rome2Rio");
+				dataPatternElement.setTextContent("");
 				// save result in response variable
 				doi.setStateVariableContentByVarName("DataPattern",
 						dataPatternElement);
-			} else if (service.equalsIgnoreCase("BlaBlaCar")) {
-				// update the PlanList variable value
-				Element planElement = doi
-						.getStateVariableContentByName("PlanList");
-				planElement.setTextContent(PlannerOutputValue);
-				// save result in response variable
-				doi.setStateVariableContentByVarName("PlanList", planElement);
-
-				// memorize the DataPattern in to the variable
-				Element dataPatternElement = doi
-						.getStateVariableContentByName("DataPattern");
-				dataPatternElement.setTextContent("BlaBlaCar");
-				// save result in response variable
-				doi.setStateVariableContentByVarName("DataPattern",
-						dataPatternElement);
-
 			}
 
 			// set activity to executed

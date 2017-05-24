@@ -14,13 +14,18 @@ import eu.fbk.das.process.engine.api.AbstractExecutableActivityInterface;
 import eu.fbk.das.process.engine.api.DomainObjectInstance;
 import eu.fbk.das.process.engine.api.ProcessEngine;
 import eu.fbk.das.process.engine.api.domain.AbstractActivity;
+import eu.fbk.das.process.engine.api.domain.ConcreteActivity;
 import eu.fbk.das.process.engine.api.domain.ProcessActivity;
 import eu.fbk.das.process.engine.api.domain.ProcessDiagram;
 import eu.fbk.das.process.engine.api.jaxb.ClauseType.Point;
 import eu.fbk.das.process.engine.api.jaxb.ClauseType.Point.DomainProperty;
+import eu.fbk.das.process.engine.api.jaxb.EffectType;
+import eu.fbk.das.process.engine.api.jaxb.EffectType.Event;
 import eu.fbk.das.process.engine.api.jaxb.GoalType;
 import eu.fbk.das.process.engine.api.jaxb.VariableType;
 
+//this executable generates a HOAA for each "R2R" segment of the user chosen alternative, 
+//followed by a concrete activity used for the "backToPlanned" event
 public class TAdefineJourneyLegsExecutable extends
 		AbstractExecutableActivityInterface {
 
@@ -60,21 +65,33 @@ public class TAdefineJourneyLegsExecutable extends
 		}
 
 		StringTokenizer stk = new StringTokenizer(transportMeans, "*");
-		List<AbstractActivity> result = new ArrayList<AbstractActivity>();
+		//
+		// // set the journeySegments variable
+		// Element numberOfSegment = doi
+		// .getStateVariableContentByName("SegmentsNumber");
+		// numberOfSegment.setTextContent(Integer.toString(stk.countTokens()));
+
+		List<ProcessActivity> result = new ArrayList<ProcessActivity>();
 		int start = currentAbstract.getTarget();
 		while (stk.hasMoreTokens()) {
 			String token = stk.nextToken();
 			Optional<AbstractActivity> act = buildAbstractActivityfor(doi,
 					token, start, start + 1);
+			Optional<ConcreteActivity> concrete = buildConcreteActivityfor(doi,
+					token, start, start + 1);
 			if (act.isPresent()) {
 				result.add(act.get());
+				start++;
+			}
+			if (concrete.isPresent()) {
+				result.add(concrete.get());
 				start++;
 			}
 		}
 
 		// extend current processes with hoaas
 		int target = currentAbstract.getTarget();
-		for (AbstractActivity act : result) {
+		for (ProcessActivity act : result) {
 			proc.getActivities().add(target, act);
 			target++;
 		}
@@ -87,21 +104,33 @@ public class TAdefineJourneyLegsExecutable extends
 		}
 	}
 
+	private Optional<ConcreteActivity> buildConcreteActivityfor(
+			DomainObjectInstance doi, String token, int source, int target) {
+		GoalType goal = new GoalType();
+		Point point = new Point();
+		DomainProperty dp = new DomainProperty();
+		dp.setDpName("TravelAssistant");
+		dp.getState().add("LEG_REFINED");
+		point.getDomainProperty().add(dp);
+		goal.getPoint().add(point);
+
+		EffectType effect = new EffectType();
+		Event event = new Event();
+		event.setDpName("TravelAssistant");
+		event.setEventName("backToPlanned");
+		effect.getEvent().add(event);
+
+		int index = hoaaCounter - 1;
+		ConcreteActivity act = new ConcreteActivity(source, target,
+				"TA_SaveLeg-" + index, null);
+
+		act.setEffect(effect);
+
+		return Optional.of(act);
+	}
+
 	private Optional<AbstractActivity> buildAbstractActivityfor(
 			DomainObjectInstance doi, String token, int source, int target) {
-		// StringTokenizer stk = new StringTokenizer(token, ";");
-		// String mean = "";
-		// String company = "";
-		// String departure = "";
-		// String destination = "";
-		// if (stk.countTokens() == 4) {
-		// while (stk.hasMoreTokens()) {
-		// mean = stk.nextToken();
-		// company = stk.nextToken();
-		// departure = stk.nextToken();
-		// destination = stk.nextToken();
-		// }
-		// }
 		return Optional.of(buildLeg(doi, source, target, token));
 	}
 
@@ -123,11 +152,6 @@ public class TAdefineJourneyLegsExecutable extends
 		// setting the variables for the generated abstract activity
 		List<VariableType> actionVariable = buildActionVariables(act, token);
 		act.setActionVariables(actionVariable);
-		// update the doi state with the variables belonging to the new
-		// generated abstract activity
-		// updateDoiState(doi, actionVariable);
-		// extend knowledge with external knowledge of domain property
-		// pe.addExternalKnowledge(doi, dp.getDpName(), "INITIAL");
 
 		return act;
 	}
@@ -139,43 +163,9 @@ public class TAdefineJourneyLegsExecutable extends
 		List<VariableType> actionVariable = new ArrayList<VariableType>();
 		VariableType legDetails = DomainObjectsVariablesUtils.newVariable(
 				varPrefix, "LegDetails", token);
-		// VariableType companyName = DomainObjectsVariablesUtils.newVariable(
-		// varPrefix, "Company", company);
-		// VariableType sourcePoint = DomainObjectsVariablesUtils.newVariable(
-		// varPrefix, "Source", departure);
-		// VariableType destinationPoint = DomainObjectsVariablesUtils
-		// .newVariable(varPrefix, "Destination", destination);
-		// VariableType resultList = DomainObjectsVariablesUtils.newVariable(
-		// varPrefix, "ResultList", "");
-		// VariableType userChoice = DomainObjectsVariablesUtils.newVariable(
-		// varPrefix, "UserSelection", "");
-		// VariableType defaultSolution =
-		// DomainObjectsVariablesUtils.newVariable(
-		// varPrefix, "DefaultSolution", "");
 
 		actionVariable.add(legDetails);
-		// actionVariable.add(companyName);
-		// actionVariable.add(sourcePoint);
-		// actionVariable.add(destinationPoint);
-		// actionVariable.add(resultList);
-		// actionVariable.add(userChoice);
-		// actionVariable.add(defaultSolution);
-
 		return actionVariable;
 	}
 
-	// private void updateDoiState(DomainObjectInstance doi,
-	// List<VariableType> actionVariable) {
-	// if (doi != null) {
-	// if (doi.getState() != null) {
-	// if (doi.getState().getStateVariable() != null) {
-	// doi.getState().getStateVariable().addAll(actionVariable);
-	// }
-	// } else {
-	// State s = new State();
-	// s.getStateVariable().addAll(actionVariable);
-	// doi.setState(s);
-	// }
-	// }
-	// }
 }

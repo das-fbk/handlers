@@ -68,6 +68,9 @@ public class TAidentifyLegExecutable extends
 		// execution
 		ProcessDiagram hostProcess = doi.getProcess();
 		// we set the process variables to be used by the DataViewer
+		// NOTE: this couple of variables is not overwritten but a new couple is
+		// appended to the data structure; it works well because then it looks
+		// for the last two but they should be overwritten;
 		pe.addProcVar(hostProcess, "isInScope", "true");
 		pe.addProcVar(hostProcess, "scopePrefix", hoaaName + hoaaCounter);
 		// pe.addProcVar(hostProcess, "doInstanceName", doi.getId());
@@ -141,18 +144,24 @@ public class TAidentifyLegExecutable extends
 		String transportMode = HigherOrderActivitiesConstant
 				.getTransportationMode(mean.toLowerCase());
 		switch (transportMode) {
-		case "train":
-			return Optional.of(buildGlobal(doi, source, target, mean, company,
-					departure, destination));
-		case "bus":
-			return Optional.of(buildGlobal(doi, source, target, mean, company,
-					departure, destination));
+		// case "train":
+		// return Optional.of(buildSpecificTransportMean(doi, source, target,
+		// mean, company,
+		// departure, destination));
+		// case "bus":
+		// return Optional.of(buildSpecificTransportMean(doi, source, target,
+		// mean, company,
+		// departure, destination));
 		case "rideshare":
 			return Optional.of(buildRideshare(doi, source, target, mean,
 					company, departure, destination));
 
 		default:
-			return Optional.empty();
+			return Optional.of(buildSpecificTransportMean(doi, source, target,
+					mean, company, departure, destination));
+
+			// default:
+			// return Optional.empty();
 		}
 	}
 
@@ -184,14 +193,14 @@ public class TAidentifyLegExecutable extends
 		return act;
 	}
 
-	private AbstractActivity buildGlobal(DomainObjectInstance doi, int source,
-			int target, String mean, String company, String departure,
-			String destination) {
+	private AbstractActivity buildSpecificTransportMean(
+			DomainObjectInstance doi, int source, int target, String mean,
+			String company, String departure, String destination) {
 		GoalType goal = new GoalType();
 		Point point = new Point();
 		DomainProperty dp = new DomainProperty();
-		dp.setDpName("GlobalPlanner");
-		dp.getState().add("ALTERNATIVES_SENT");
+		dp.setDpName("SpecificJourney");
+		dp.getState().add("AVAILABLE_ROUTES_SENT");
 		point.getDomainProperty().add(dp);
 		goal.getPoint().add(point);
 		AbstractActivity act = new AbstractActivity(source, target, hoaaName
@@ -201,15 +210,14 @@ public class TAidentifyLegExecutable extends
 		hoaaCounter++;
 
 		// setting the variables for the generated abstract activity
-		// List<VariableType> actionVariable = buildActionVariables(act,
-		// departure, destination);
-		// act.setActionVariables(actionVariable);
+		List<VariableType> actionVariable = buildActionVariables(act, mean,
+				company, departure, destination);
+		act.setActionVariables(actionVariable);
 		// update the doi state with the variables belonging to the new
 		// generated abstract activity
-		// updateDoiState(doi, actionVariable);
+		updateDoiState(doi, actionVariable);
 		// extend knowledge with external knowledge of domain property
 		pe.addExternalKnowledge(doi, dp.getDpName(), "INITIAL");
-
 		return act;
 	}
 
@@ -229,8 +237,9 @@ public class TAidentifyLegExecutable extends
 				varPrefix, "ResultList", "");
 		VariableType userChoice = DomainObjectsVariablesUtils.newVariable(
 				varPrefix, "UserSelection", "");
-		VariableType defaultSolution = DomainObjectsVariablesUtils.newVariable(
-				varPrefix, "DefaultSolution", "");
+		// VariableType defaultSolution =
+		// DomainObjectsVariablesUtils.newVariable(
+		// varPrefix, "DefaultSolution", "");
 
 		actionVariable.add(transportMean);
 		actionVariable.add(companyName);
@@ -238,7 +247,7 @@ public class TAidentifyLegExecutable extends
 		actionVariable.add(destinationPoint);
 		actionVariable.add(resultList);
 		actionVariable.add(userChoice);
-		actionVariable.add(defaultSolution);
+		// actionVariable.add(defaultSolution);
 
 		return actionVariable;
 	}

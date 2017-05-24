@@ -1,6 +1,7 @@
 package eu.fbk.das.domainobject.executable;
 
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import org.w3c.dom.Element;
 
@@ -46,14 +47,25 @@ public class ChooseAlternativeExecutable extends
 
 			Element goalHOAA = doi
 					.getStateVariableContentByName("HOAAPlanGoal");
-			String extractedString = generateOverallString(alternative
-					.getSegments());
 
+			String extractedString = new String();
+			if (alternative.getSegments() != null
+					|| !alternative.getSegments().isEmpty()) {
+				extractedString = generateOverallString(alternative
+						.getSegments());
+			}
 			goalHOAA.setTextContent(extractedString);
 
 			// save result in response variable
 			// set the HOAA Goal starting from the choosen plan alternative
 			doi.setStateVariableContentByVarName("HOAAPlanGoal", goalHOAA);
+
+			StringTokenizer stk = new StringTokenizer(extractedString, "*");
+
+			// set the journeySegments variable
+			Element numberOfSegment = doi
+					.getStateVariableContentByName("SegmentsNumber");
+			numberOfSegment.setTextContent(Integer.toString(stk.countTokens()));
 
 			currentConcrete.setExecuted(true);
 		}
@@ -66,11 +78,20 @@ public class ChooseAlternativeExecutable extends
 		TripAlternativeRome2Rio result = null;
 
 		for (int i = 0; i < romeToRioAlternatives.size(); i++) {
+			boolean found = false;
 			TripAlternativeRome2Rio current = romeToRioAlternatives.get(i);
 			String mean = current.getMean();
-			if (choosenAlternative.contains(mean)) {
-				result = current;
-				break;
+			StringTokenizer stk = new StringTokenizer(mean, ",");
+			int tokenSize = stk.countTokens();
+			for (int j = 0; j < tokenSize; j++) {
+				String token = stk.nextToken();
+				if (!choosenAlternative.contains(token)) {
+					break;
+				} else if (j == tokenSize - 1) {
+					found = true;
+					result = current;
+					break;
+				}
 			}
 		}
 		return result;

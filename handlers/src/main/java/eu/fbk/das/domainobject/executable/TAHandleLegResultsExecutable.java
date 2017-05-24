@@ -11,6 +11,14 @@ import eu.fbk.das.process.engine.api.domain.ConcreteActivity;
 import eu.fbk.das.process.engine.api.domain.ProcessActivity;
 import eu.fbk.das.process.engine.api.domain.ProcessDiagram;
 
+/**
+ * This handler is used for the concrete activity placed in the "TA_RefineLeg"
+ * fragment, in between the abstract activity refined with the specific
+ * transport service used for the referring journey segment and the abstract
+ * activity of the dataViewer; its objective is that of copying the value of the
+ * ResultList variable in the leg scope into the PlannerOutput variable in the
+ * main scope, representing the input for the dataViewer.
+ **/
 public class TAHandleLegResultsExecutable extends
 		AbstractExecutableActivityInterface {
 
@@ -19,8 +27,6 @@ public class TAHandleLegResultsExecutable extends
 
 	private ProcessEngine pe;
 	private static String SCOPE_PREFIX = new String();
-
-	// private static String HOSTING_INSTANCE_NAME = new String();
 
 	public TAHandleLegResultsExecutable(ProcessEngine processEngine) {
 		this.pe = processEngine;
@@ -36,8 +42,6 @@ public class TAHandleLegResultsExecutable extends
 		if (pe.checkVarCondition("isInScope", "true", doi.getProcess())) {
 			SCOPE_PREFIX = (pe.getVariablesFor(doi.getProcess(), "scopePrefix"))
 					.getValue();
-			// HOSTING_INSTANCE_NAME = (pe.getVariablesFor(doi.getProcess(),
-			// "doInstanceName")).getValue();
 			Element elemResultList = doi
 					.getStateVariableContentByName(SCOPE_PREFIX + "."
 							+ "ResultList");

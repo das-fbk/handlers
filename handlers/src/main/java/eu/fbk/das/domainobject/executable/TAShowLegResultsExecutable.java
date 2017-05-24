@@ -58,7 +58,8 @@ public class TAShowLegResultsExecutable extends
 
 			// retrieve the result list from the service
 			Element result = doi.getStateVariableContentByName("PlanList");
-			if (result.getFirstChild() != null) {
+			if (result.getFirstChild() != null
+					&& !result.getFirstChild().getNodeValue().isEmpty()) {
 
 				// send PLAN to the user
 
