@@ -8,6 +8,7 @@ import org.w3c.dom.Element;
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.TravelAssistantBot;
 import eu.fbk.das.domainobject.executable.utils.Rome2Rio.Segment;
 import eu.fbk.das.domainobject.executable.utils.Rome2Rio.TripAlternativeRome2Rio;
+import eu.fbk.das.domainobject.executable.utils.ViaggiaTrento.TravelViaggiaTrento;
 import eu.fbk.das.process.engine.api.AbstractExecutableActivityInterface;
 import eu.fbk.das.process.engine.api.DomainObjectInstance;
 import eu.fbk.das.process.engine.api.ProcessEngine;
@@ -36,11 +37,24 @@ public class ChooseAlternativeExecutable extends
 
 		Element choice = doi.getStateVariableContentByName("ChosenPlan");
 		System.out.println(bot.getChoosenAlternative());
+
 		choice.setTextContent(bot.getChoosenAlternative());
 		// save result in response variable
 		doi.setStateVariableContentByVarName("ChosenPlan", choice);
 
-		if (bot.getChoosenAlternative() != null) {
+		if (bot.getViaggiaTrentoAlternatives() != null) {
+			System.out.println(bot.getChoosenAlternative());
+
+			TravelViaggiaTrento alternative = this.getViaggiaAlternative(
+					bot.getViaggiaTrentoAlternatives(),
+					bot.getChoosenAlternative());
+			// Element goalHOAA = doi
+			// .getStateVariableContentByName("HOAAPlanGoal");
+			// String extractedString = new String();
+			// TODO: To Be Finalized
+			currentConcrete.setExecuted(true);
+
+		} else if (bot.getChoosenAlternative() != null) {
 			TripAlternativeRome2Rio alternative = this
 					.getR2RAlternative(bot.getRomeToRioAlternatives(),
 							bot.getChoosenAlternative());
@@ -70,6 +84,18 @@ public class ChooseAlternativeExecutable extends
 			currentConcrete.setExecuted(true);
 		}
 		return;
+	}
+
+	private TravelViaggiaTrento getViaggiaAlternative(
+			ArrayList<TravelViaggiaTrento> viaggiaAlternatives,
+			String choosenAlternative) {
+
+		String[] parts = choosenAlternative.split(". ");
+		String index = parts[0];
+		int indexValue = Integer.parseInt(index);
+		TravelViaggiaTrento result = viaggiaAlternatives.get(indexValue);
+		return result;
+
 	}
 
 	private TripAlternativeRome2Rio getR2RAlternative(

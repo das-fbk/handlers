@@ -10,11 +10,14 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.Element;
 
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.TravelAssistantBot;
-import eu.fbk.das.domainobject.executable.utils.Rome2Rio.TripAlternativeRome2Rio;
+import eu.fbk.das.domainobject.executable.utils.GoogleAPI.GoogleAPIWrapper;
+import eu.fbk.das.domainobject.executable.utils.ViaggiaTrento.TravelViaggiaTrento;
+import eu.fbk.das.domainobject.executable.utils.ViaggiaTrento.ViaggiaTrentoAPIWrapper;
 import eu.fbk.das.process.engine.api.AbstractExecutableActivityInterface;
 import eu.fbk.das.process.engine.api.DomainObjectInstance;
 import eu.fbk.das.process.engine.api.ProcessEngine;
@@ -31,12 +34,13 @@ public class VTServiceCallExecutable extends
 
 	private ProcessEngine pe;
 	private JSONObject viaggiaTrentoJson;
+	private TravelAssistantBot bot;
 
 	public VTServiceCallExecutable(ProcessEngine processEngine,
-			ArrayList<TripAlternativeRome2Rio> alternatives,
 			TravelAssistantBot bot) {
 		this.pe = processEngine;
 		this.viaggiaTrentoJson = new JSONObject();
+		this.bot = bot;
 	}
 
 	@Override
@@ -59,19 +63,26 @@ public class VTServiceCallExecutable extends
 			String toValue = to.getFirstChild().getNodeValue();
 
 			this.viaggiaTrentoJson = this.CallViaggiaTrento(fromValue, toValue);
-
 			// update the PlannerOutput variable value
 			Element jsonElement = doi
 					.getStateVariableContentByName("PlannerOutput");
 			jsonElement.setTextContent("ViaggiaTrento<>"
 					+ this.viaggiaTrentoJson.toString());
-			// save result in response variable
 
+			// save result in response variable
 			doi.setStateVariableContentByVarName("PlannerOutput", jsonElement);
 
-			// set activity to executed
-			currentConcrete.setExecuted(true);
-			return;
+			// save the viaggia alternatives list in the bot variable
+			ViaggiaTrentoAPIWrapper viaggiaWrapper = new ViaggiaTrentoAPIWrapper();
+			ArrayList<TravelViaggiaTrento> viaggiaAlternatives = new ArrayList<TravelViaggiaTrento>();
+			GoogleAPIWrapper googleWrapper = new GoogleAPIWrapper();
+			String coordinatesFrom = googleWrapper.getCoordinates(fromValue);
+			String coordinatesTo = googleWrapper.getCoordinates(toValue);
+
+			viaggiaAlternatives = viaggiaWrapper.getViaggiaTrentoRoutes(
+					coordinatesFrom, coordinatesTo);
+			bot.setViaggiaTrentoAlternatives(viaggiaAlternatives);
+
 		}
 		logger.debug("Domain Object without a state! ");
 		currentConcrete.setExecuted(true);
@@ -79,12 +90,18 @@ public class VTServiceCallExecutable extends
 	}
 
 	private JSONObject CallViaggiaTrento(String from, String to) {
-		// ViaggiaTrentoAPIWrapper viaggiaWrapper = new
-		// ViaggiaTrentoAPIWrapper();
-
+		ViaggiaTrentoAPIWrapper viaggiaWrapper = new ViaggiaTrentoAPIWrapper();
+		GoogleAPIWrapper googleWrapper = new GoogleAPIWrapper();
 		JSONObject result = new JSONObject();
+		JSONArray alternatives = new JSONArray();
 
-		// viaggiaWrapper.getViaggiaAlternatives(from, to);
+		String coordinatesFrom = googleWrapper.getCoordinates(from);
+		String coordinatesTo = googleWrapper.getCoordinates(to);
+
+		alternatives = viaggiaWrapper.getViaggiaTrentoResponse(coordinatesFrom,
+				coordinatesTo);
+
+		result.put("ViaggiaTrento", alternatives);
 
 		return result;
 	}

@@ -14,6 +14,7 @@ import java.util.ResourceBundle;
 
 import eu.fbk.das.domainobject.executable.utils.BlaBlaCar.TravelBlaBlaCar;
 import eu.fbk.das.domainobject.executable.utils.Rome2Rio.TravelRome2Rio;
+import eu.fbk.das.domainobject.executable.utils.ViaggiaTrento.TravelViaggiaTrento;
 
 /**
  * Created by antbucc
@@ -286,6 +287,44 @@ public class Texts {
 
 		result += getMessage("rome2rioresult", language.locale());
 
+		return result;
+	}
+
+	public static String textViaggiaTrentoTrip(Language language,
+			ArrayList<TravelViaggiaTrento> travels) {
+		String result = getMessage("rome2riodifferentway", language.locale())
+				+ "\n";
+		for (int i = 0; i < travels.size(); i++) {
+			int rest = Integer.parseInt(travels.get(i).getDuration()) % 60;
+			int hour = Integer.parseInt(travels.get(i).getDuration()) / 60;
+			if (rest < 10) {
+				result += "\n*" + (i + 1) + ". " + "\u23f1" + hour + ".0"
+						+ rest + "h*\n";
+			} else {
+				result += "\n*" + (i + 1) + ". " + "\u23f1" + hour + "." + rest
+						+ "h*\n";
+			}
+
+			for (int j = 0; j < travels.get(i).getRoutes().size(); j++) {
+				if (travels.get(i).getSteps().get(j).equals("BUS")) {
+					result += "    " + Commands.BUSVIAGGIATRENTO
+							+ travels.get(i).getSteps().get(j) + " "
+							+ travels.get(i).getRoutes().get(j) + "\n";
+				} else if (travels.get(i).getSteps().get(j).equals("TRAIN")) {
+					result += "    " + Commands.TRAINVIAGGIATRENTO
+							+ travels.get(i).getSteps().get(j) + " "
+							+ travels.get(i).getRoutes().get(j) + "\n";
+				} else {
+					result += "    " + Commands.WALKVIAGGIATRENTO
+							+ travels.get(i).getSteps().get(j) + " "
+							+ travels.get(i).getRoutes().get(j) + "\n";
+				}
+
+			}
+
+		}
+		result += "\n";
+		result += getMessage("rome2rioresult", language.locale());
 		return result;
 	}
 

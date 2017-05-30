@@ -61,7 +61,7 @@ public class TARefineDestinationPointExecutable extends
 			// send PLAN to the user
 
 			SendMessage sendMessage = new SendMessage();
-			sendMessage.setText("Select the right address!");
+			// sendMessage.setText("Select the right address!");
 
 			Long id = bot.getCurrentID();
 
@@ -73,7 +73,7 @@ public class TARefineDestinationPointExecutable extends
 
 			bot.sendMessageAlternativeAddresses(Keyboards
 					.keyboardAddressAlternatives(bot.getCurrentID(), placesTo,
-							"NULL"), "");
+							"NULL"), "Select the right address!");
 
 		}
 		currentConcrete.setExecuted(true);

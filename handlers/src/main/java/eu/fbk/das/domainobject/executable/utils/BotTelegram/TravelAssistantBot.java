@@ -1,17 +1,26 @@
 package eu.fbk.das.domainobject.executable.utils.BotTelegram;
 
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Commands.BACKCOMMAND;
+import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Commands.CHANGES;
+import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Commands.DATEHOUR;
+import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Commands.DISTANCE;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Commands.ENGLISH;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Commands.ESPANOL;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Commands.ITALIANO;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Commands.LANGUAGECOMMAND;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Commands.MANUAL;
+import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Commands.PRICE;
+import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Commands.SEATS;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Commands.STARTCOMMAND;
+import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Commands.TIME;
+import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.getDifferentWayTravelRomeToRio;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardAskDetails;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardAskFrom;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardAskFromManual;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardAskTo;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardCalcola;
+import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardRome2RioResult;
+import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Texts.textRome2RioResult;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,10 +40,12 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 import eu.fbk.das.domainobject.executable.utils.BlaBlaCar.TripAlternativeBlaBlaCar;
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Current;
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Database;
+import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards;
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Menu;
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Texts;
 import eu.fbk.das.domainobject.executable.utils.GoogleAPI.GoogleAPIWrapper;
 import eu.fbk.das.domainobject.executable.utils.Rome2Rio.TripAlternativeRome2Rio;
+import eu.fbk.das.domainobject.executable.utils.ViaggiaTrento.TravelViaggiaTrento;
 
 /**
  * Created by antbucc
@@ -57,6 +68,16 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 	private String ChoosenAlternative;
 	private String ChoosenRevisedFromAddress;
 	ArrayList<TripAlternativeRome2Rio> romeToRioAlternatives;
+	ArrayList<TravelViaggiaTrento> viaggiaTrentoAlternatives;
+
+	public ArrayList<TravelViaggiaTrento> getViaggiaTrentoAlternatives() {
+		return viaggiaTrentoAlternatives;
+	}
+
+	public void setViaggiaTrentoAlternatives(
+			ArrayList<TravelViaggiaTrento> viaggiaTrentoAlternatives) {
+		this.viaggiaTrentoAlternatives = viaggiaTrentoAlternatives;
+	}
 
 	public ArrayList<TripAlternativeRome2Rio> getRomeToRioAlternatives() {
 		return romeToRioAlternatives;
@@ -68,6 +89,10 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 	}
 
 	ArrayList<TripAlternativeBlaBlaCar> blaBlaCarAlternatives;
+
+	public ArrayList<TripAlternativeBlaBlaCar> getBlaBlaCarAlternatives() {
+		return blaBlaCarAlternatives;
+	}
 
 	private String ChoosenRevisedToAddress;
 
@@ -292,14 +317,99 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 
 				} else {
 					// choosen trip received
-					// System.out.println(message.getMessageId());
-
-					// ....qui dovresti vedere l'indice del messaggio
-					// selezionato....
+					String fromAddress = message.getText();
+					this.setChoosenRevisedFromAddress(fromAddress);
+					Current.setMenu(chatId, Menu.REFINETOADDRESS);
 					this.setChoosenAlternative(message.getText());
 
 				}
 				launchEffect();
+				break;
+			case ROME2RIORESULT:
+
+				switch (message.getText()) {
+				case PRICE:
+					sendMessageDefault(
+							message,
+							keyboardRome2RioResult(chatId,
+									romeToRioAlternatives, message.getText()),
+							textRome2RioResult(Current.getLanguage(chatId),
+									getDifferentWayTravelRomeToRio(),
+									message.getText()));
+					break;
+				case TIME:
+					sendMessageDefault(
+							message,
+							keyboardRome2RioResult(chatId,
+									romeToRioAlternatives, message.getText()),
+							textRome2RioResult(Current.getLanguage(chatId),
+									getDifferentWayTravelRomeToRio(),
+									message.getText()));
+					break;
+				case CHANGES:
+					sendMessageDefault(
+							message,
+							keyboardRome2RioResult(chatId,
+									romeToRioAlternatives, message.getText()),
+							textRome2RioResult(Current.getLanguage(chatId),
+									getDifferentWayTravelRomeToRio(),
+									message.getText()));
+					break;
+				case DISTANCE:
+					sendMessageDefault(
+							message,
+							keyboardRome2RioResult(chatId,
+									romeToRioAlternatives, message.getText()),
+							textRome2RioResult(Current.getLanguage(chatId),
+									getDifferentWayTravelRomeToRio(),
+									message.getText()));
+					break;
+				default:
+					// choosen trip received
+					// String fromAddress = message.getText();
+					// this.setChoosenRevisedFromAddress(fromAddress);
+					Current.setMenu(chatId, Menu.AFTERROME2RIO);
+					this.setChoosenAlternative(message.getText());
+
+				}
+				break;
+			case AFTERROME2RIO:
+				// here we receive the selection of a Rome2Rio alternatives
+				System.out.println("AFTERROME2RIO");
+				switch (message.getText()) {
+				case DATEHOUR:
+					sendMessageDefault(message,
+							Keyboards.keyboardBlaBlaCarResult(chatId,
+									this.getBlaBlaCarAlternatives(),
+									message.getText()),
+							Texts.textBlaBlaCarResult(
+									Current.getLanguage(chatId),
+									Keyboards.getDifferentWayTravelBlaBlaCar(),
+									message.getText()));
+					break;
+				case PRICE:
+					sendMessageDefault(message,
+							Keyboards.keyboardBlaBlaCarResult(chatId,
+									this.getBlaBlaCarAlternatives(),
+									message.getText()),
+							Texts.textBlaBlaCarResult(
+									Current.getLanguage(chatId),
+									Keyboards.getDifferentWayTravelBlaBlaCar(),
+									message.getText()));
+					break;
+				case SEATS:
+					sendMessageDefault(message,
+							Keyboards.keyboardBlaBlaCarResult(chatId,
+									this.getBlaBlaCarAlternatives(),
+									message.getText()),
+							Texts.textBlaBlaCarResult(
+									Current.getLanguage(chatId),
+									Keyboards.getDifferentWayTravelBlaBlaCar(),
+									message.getText()));
+					break;
+				default:
+					break;
+				}
 				break;
 			case REFINEFROMADDRESS:
 				String fromAddress = message.getText();
@@ -312,7 +422,10 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 				this.setChoosenRevisedToAddress(toAddress);
 				// Current.setMenu(chatId, Menu.REFINETOADDRESS);
 				break;
-
+			case VIAGGIATRENTODESTINATION:
+				String selectedAlternative = message.getText();
+				this.setChoosenAlternative(selectedAlternative);
+				break;
 			case CALCOLA:
 				this.setResultsReceived(true);
 				this.setCurrentID(chatId);

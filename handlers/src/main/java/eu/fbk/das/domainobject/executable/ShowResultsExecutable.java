@@ -50,29 +50,57 @@ public class ShowResultsExecutable extends AbstractExecutableActivityInterface {
 			// retrieve PLAN variable
 			Element plan = doi.getStateVariableContentByName("PlanList");
 			if (plan.getFirstChild() != null) {
-				// String planValue = plan.getFirstChild().getNodeValue();
+				String planValue = plan.getFirstChild().getNodeValue();
 
-				// send PLAN to the user
+				// check if the result is from Rome2Rio or ViaggiaTrento
+				if (planValue.contains("ViaggiaTrento")) {
+					// VIAGGIA TRENTO RESULTS
 
-				SendMessage sendMessage = new SendMessage();
+					SendMessage sendMessage = new SendMessage();
+					Long id = bot.getCurrentID();
 
-				Long id = bot.getCurrentID();
+					String idString = id.toString();
+					sendMessage.setChatId(idString);
+					// send alternatives to the user
+					try {
+						System.out.println(bot.getCurrentID());
+						bot.sendMessageDefault(Keyboards
+								.keyboardChooseStartViaggiaTrento(id,
+										bot.getViaggiaTrentoAlternatives()),
+								Texts.textViaggiaTrentoTrip(Current
+										.getLanguage(id), Keyboards
+										.getDifferentWayTravelViaggiaTrento()));
 
-				String idString = id.toString();
-				sendMessage.setChatId(idString);
+					} catch (TelegramApiException e1) {
 
-				// send alternatives to the user
-				try {
-					System.out.println(bot.getCurrentID());
-					bot.sendMessageDefault(Keyboards.keyboardRome2RioResult(id,
-							bot.getRomeToRioAlternatives(), "NULL"), Texts
-							.textRome2RioResult(Current.getLanguage(id),
-									Keyboards.getDifferentWayTravelRomeToRio(),
-									""));
+						e1.printStackTrace();
+					}
 
-				} catch (TelegramApiException e1) {
+				} else {
+					// ROME2RIO RESULTS
+					// send PLAN to the user
 
-					e1.printStackTrace();
+					SendMessage sendMessage = new SendMessage();
+
+					Long id = bot.getCurrentID();
+
+					String idString = id.toString();
+					sendMessage.setChatId(idString);
+
+					// send alternatives to the user
+					try {
+						System.out.println(bot.getCurrentID());
+						bot.sendMessageDefault(
+								Keyboards.keyboardRome2RioResult(id,
+										bot.getRomeToRioAlternatives(), "NULL"),
+								Texts.textRome2RioResult(Current
+										.getLanguage(id), Keyboards
+										.getDifferentWayTravelRomeToRio(), ""));
+
+					} catch (TelegramApiException e1) {
+
+						e1.printStackTrace();
+					}
 				}
 
 			}
@@ -81,5 +109,4 @@ public class ShowResultsExecutable extends AbstractExecutableActivityInterface {
 		currentConcrete.setExecuted(true);
 		return;
 	}
-
 }

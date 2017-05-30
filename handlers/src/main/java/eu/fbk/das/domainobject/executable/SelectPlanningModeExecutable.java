@@ -1,8 +1,13 @@
 package eu.fbk.das.domainobject.executable;
 
+import java.util.List;
+
 import org.w3c.dom.Element;
 
+import se.walkercrou.places.GooglePlaces;
+import se.walkercrou.places.Place;
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.TravelAssistantBot;
+import eu.fbk.das.domainobject.executable.utils.GoogleAPI.GoogleAPIWrapper;
 import eu.fbk.das.process.engine.api.AbstractExecutableActivityInterface;
 import eu.fbk.das.process.engine.api.DomainObjectInstance;
 import eu.fbk.das.process.engine.api.ProcessEngine;
@@ -48,18 +53,61 @@ public class SelectPlanningModeExecutable extends
 		return;
 	}
 
-	private String calculateProximity(String start, String destination) {
+	public static String calculateProximity(String start, String destination) {
 		String result = "";
-		// add here the right logic to decide between local and global
 
-		if (start.contains("trento") || destination.contains("rovereto")) {
-			result = "globale";
+		// using google take the place ID
+		GoogleAPIWrapper wrapper = new GoogleAPIWrapper();
+		// String coordinates = wrapper.getCoordinates(start);
+		String placeIDStart = wrapper.getPlaceID(start);
+		if (placeIDStart == "") {
+			GooglePlaces client = new GooglePlaces(
+					"AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg");
+
+			List<Place> placesFrom = client.getPlacesByQuery(start,
+					GooglePlaces.MAXIMUM_RESULTS);
+			Place firstPlace = placesFrom.get(0);
+			placeIDStart = firstPlace.getPlaceId();
+		}
+
+		String placeIDDest = wrapper.getPlaceID(destination);
+		if (placeIDDest == "") {
+			GooglePlaces client = new GooglePlaces(
+					"AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg");
+
+			List<Place> placesDest = client.getPlacesByQuery(destination,
+					GooglePlaces.MAXIMUM_RESULTS);
+			Place firstPlace = placesDest.get(0);
+			placeIDDest = firstPlace.getPlaceId();
+		}
+
+		String provinceStart = wrapper.retrieveProvince(placeIDStart);
+		String provinceDest = wrapper.retrieveProvince(placeIDDest);
+
+		if (provinceStart == "" || provinceDest == "") {
+			result = "global";
+		}
+
+		else if (provinceStart.equalsIgnoreCase(provinceDest)
+				&& provinceStart.equalsIgnoreCase("TN")) {
+			result = "local";
 
 		} else {
-			result = "globale";
+			result = "global";
 		}
 
 		return result;
 	}
+
+	/*
+	 * public static void main(String[] args) { String start = "trento"; String
+	 * destination = "canazei"; GoogleAPIWrapper wrapper = new
+	 * GoogleAPIWrapper(); String result = calculateProximity(start,
+	 * destination); System.out.println(result);
+	 * 
+	 * System.out.println("End Test");
+	 * 
+	 * }
+	 */
 
 }

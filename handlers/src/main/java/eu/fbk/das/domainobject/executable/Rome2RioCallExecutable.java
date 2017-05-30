@@ -9,6 +9,8 @@ import org.json.JSONObject;
 import org.w3c.dom.Element;
 
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.TravelAssistantBot;
+import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Current;
+import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Menu;
 import eu.fbk.das.domainobject.executable.utils.Rome2Rio.Rome2RioAPIWrapper;
 import eu.fbk.das.domainobject.executable.utils.Rome2Rio.TripAlternativeRome2Rio;
 import eu.fbk.das.process.engine.api.AbstractExecutableActivityInterface;
@@ -74,6 +76,7 @@ public class Rome2RioCallExecutable extends AbstractExecutableActivityInterface 
 					fromValue, toValue);
 
 			bot.setRomeToRioAlternatives(romeToRioAlternatives);
+			Current.setMenu(bot.getCurrentID(), Menu.ROME2RIORESULT);
 
 			// set activity to executed
 			currentConcrete.setExecuted(true);

@@ -20,11 +20,11 @@ public class GoogleAPIWrapper {
 				+ latlng + "&key=" + GoogleAPIKey;
 		System.out.println(URL);
 		String result = callURL(URL);
-		// elaboro il JSON in uscita dalla call API
+		// JSON Elaboration
 		String indirizzo = "";
 
 		if (result.equalsIgnoreCase("erroreAPI")) {
-			return indirizzo;
+			System.out.println("errorAPI");
 		} else {
 			// System.out.println(result);
 			JSONObject jsonObj = new JSONObject(result);
@@ -32,10 +32,7 @@ public class GoogleAPIWrapper {
 			routes = jsonObj.getJSONArray("results");
 			for (int i = 0; i < routes.length(); i++) {
 
-				System.out.println("Soluzione " + i + ":");
 				JSONObject route = (JSONObject) routes.get(i);
-				System.out.println(route);
-				// indirizzo corrente
 				String ind = route.getString("formatted_address");
 				indirizzo = ind;
 				break;
@@ -46,45 +43,159 @@ public class GoogleAPIWrapper {
 		return indirizzo;
 	}
 
-	public String getCoordinates(String address) {
+	// retrieve the information about the Province of a certain place/address.
+	public String retrieveProvince(String placeID) {
+		String GoogleAPIKey = "AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg";
+		String URL = "https://maps.googleapis.com/maps/api/place/details/json?placeid="
+				+ placeID + "&key=" + GoogleAPIKey;
+
+		String result = callURL(URL);
+		String province = "";
+		// json parsing
+		JSONObject jsonObj = new JSONObject(result);
+		JSONObject details = new JSONObject();
+		details = jsonObj.getJSONObject("result");
+		JSONArray components = details.getJSONArray("address_components");
+		for (int i = 0; i < components.length(); i++) {
+			JSONObject jsonObj1 = new JSONObject();
+			jsonObj1 = (JSONObject) components.get(i);
+			// System.out.println(jsonObj1);
+			JSONArray types = jsonObj1.getJSONArray("types");
+			// System.out.println(types);
+			String area = types.getString(0);
+			if (area.equalsIgnoreCase("administrative_area_level_2")) {
+				province = jsonObj1.getString("short_name");
+				break;
+			}
+
+		}
+
+		return province;
+	}
+
+	/*
+	 * @SuppressWarnings("unused") public String getCoordinates(String address)
+	 * { String GoogleAPIKey = "AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg"; String
+	 * URL = "https://maps.googleapis.com/maps/api/geocode/json?address=" +
+	 * address + "&key=" + GoogleAPIKey; // System.out.println(URL); String
+	 * result = callURL(URL); // Json Parsing String latlong = "";
+	 * 
+	 * if (result.equalsIgnoreCase("erroreAPI")) {
+	 * System.out.println("errorAPI"); } else { // System.out.println(result);
+	 * JSONObject jsonObj = new JSONObject(result); JSONArray routes = new
+	 * JSONArray(); routes = jsonObj.getJSONArray("results"); for (int i = 0; i
+	 * < routes.length(); i++) {
+	 * 
+	 * JSONObject info = (JSONObject) routes.get(i); System.out.println(info);
+	 * JSONObject geometry = info.getJSONObject("geometry"); JSONObject viewport
+	 * = geometry.getJSONObject("viewport"); JSONObject coord =
+	 * viewport.getJSONObject("southwest"); System.out.println(coord);
+	 * 
+	 * Double lat = coord.getDouble("lat"); Double lng = coord.getDouble("lng");
+	 * 
+	 * String latString = lat.toString(); String lngString = lng.toString();
+	 * 
+	 * latlong = latString + "," + lngString;
+	 * 
+	 * break;
+	 * 
+	 * } }
+	 * 
+	 * return latlong; }
+	 */
+
+	public String getPlaceID(String address) {
 		String GoogleAPIKey = "AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg";
 		String URL = "https://maps.googleapis.com/maps/api/geocode/json?address="
 				+ address + "&key=" + GoogleAPIKey;
+		// System.out.println(URL);
+		String result = callURL(URL);
+
+		String id = "";
+
+		if (result.equalsIgnoreCase("erroreAPI")) {
+			return id;
+		} else {
+
+			JSONObject jsonObj = new JSONObject(result);
+			JSONArray routes = new JSONArray();
+			routes = jsonObj.getJSONArray("results");
+			JSONObject info = (JSONObject) routes.get(0);
+
+			id = info.getString("place_id");
+
+		}
+
+		return id;
+	}
+
+	public String getGoogleAutocomplete(String city) {
+
+		String alternatives = new String();
+		String result = callURL("https://maps.googleapis.com/maps/api/place/autocomplete/json?key=AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg&input="
+				+ city + "&components=country:it&language=en");
+
+		if (result.equalsIgnoreCase("erroreAPI")) {
+			return alternatives;
+		} else {
+
+			JSONObject jsonObj = new JSONObject(result);
+			JSONArray predictions = new JSONArray();
+			predictions = jsonObj.getJSONArray("predictions");
+
+			for (int i = 0; i < predictions.length(); i++) {
+
+				JSONObject numbers = (JSONObject) predictions.get(i);
+
+				JSONArray terms = new JSONArray();
+				terms = numbers.getJSONArray("terms");
+
+				JSONObject value = (JSONObject) terms.get(1);
+
+				if (value.getString("value").equals("Province of Trento")
+						&& !alternatives.contains(numbers
+								.getString("description"))) {
+					alternatives = numbers.getString("description");
+				}
+			}
+		}
+		return alternatives;
+	}
+
+	public String getCoordinates(String address) {
+
+		String completedFrom = address.replace(", ", "+");
+		completedFrom = completedFrom.replace(" ", "+");
+
+		String URL = "https://maps.googleapis.com/maps/api/geocode/json?address="
+				+ completedFrom
+				+ "&key=AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg";
 		System.out.println(URL);
 		String result = callURL(URL);
-		// elaboro il JSON in uscita dalla call API
 		String latlong = "";
 
 		if (result.equalsIgnoreCase("erroreAPI")) {
 			return latlong;
 		} else {
-			// System.out.println(result);
 			JSONObject jsonObj = new JSONObject(result);
 			JSONArray routes = new JSONArray();
 			routes = jsonObj.getJSONArray("results");
-			for (int i = 0; i < routes.length(); i++) {
 
-				JSONObject info = (JSONObject) routes.get(i);
-				System.out.println(info);
-				JSONObject geometry = info.getJSONObject("geometry");
-				JSONObject viewport = geometry.getJSONObject("viewport");
-				JSONObject coord = viewport.getJSONObject("southwest");
-				System.out.println(coord);
+			JSONObject info = (JSONObject) routes.get(0);
 
-				Double lat = coord.getDouble("lat");
-				Double lng = coord.getDouble("lng");
+			JSONObject geometry = info.getJSONObject("geometry");
+			JSONObject location = geometry.getJSONObject("location");
 
-				String latString = lat.toString();
-				String lngString = lng.toString();
+			Double lat = location.getDouble("lat");
+			Double lng = location.getDouble("lng");
 
-				latlong = latString + "," + lngString;
+			String latString = lat.toString();
+			String lngString = lng.toString();
 
-				break;
+			latlong = latString + "%2C" + lngString;
 
-			}
+			return latlong;
 		}
-
-		return latlong;
 	}
 
 	// returns the result of the API call as string

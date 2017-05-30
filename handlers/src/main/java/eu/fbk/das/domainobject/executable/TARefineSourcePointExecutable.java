@@ -76,7 +76,8 @@ public class TARefineSourcePointExecutable extends
 			try {
 				bot.sendMessageDefault(
 						Keyboards.keyboardAddressAlternatives(
-								bot.getCurrentID(), placesFrom, "NULL"), "");
+								bot.getCurrentID(), placesFrom, "NULL"),
+						"Select the right address!");
 			} catch (TelegramApiException e1) {
 				e1.printStackTrace();
 			}
