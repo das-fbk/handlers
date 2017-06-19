@@ -62,7 +62,7 @@ public class TARefineSourcePointExecutable extends
 			// send PLAN to the user
 
 			SendMessage sendMessage = new SendMessage();
-			sendMessage.setText("Select the right address!");
+			// sendMessage.setText("Select the right address!");
 
 			Long id = bot.getCurrentID();
 

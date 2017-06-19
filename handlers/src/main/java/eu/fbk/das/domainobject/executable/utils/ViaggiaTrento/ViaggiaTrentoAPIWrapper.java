@@ -16,7 +16,7 @@ import org.json.JSONObject;
 public class ViaggiaTrentoAPIWrapper {
 
 	public JSONArray getViaggiaTrentoResponse(String coordinatesFrom,
-			String coordinatesTo) {
+			String coordinatesTo, ArrayList<Long> serviceExecTime) {
 
 		JSONArray response = null;
 		String dateHour = new SimpleDateFormat("MM/dd/yyyy HH:mm:mm")
@@ -26,6 +26,7 @@ public class ViaggiaTrentoAPIWrapper {
 		String hour = dateHour.substring(11, 13) + "%3A"
 				+ dateHour.substring(14, 16);
 
+		long startParsingTime = System.nanoTime();
 		String result = callURL("https://dev.smartcommunitylab.it/smart-planner2/trentino/rest/plan?from="
 				+ coordinatesFrom
 				+ "&to="
@@ -35,6 +36,10 @@ public class ViaggiaTrentoAPIWrapper {
 				+ "&departureTime="
 				+ hour
 				+ "&transportType=TRANSIT&routeType=fastest&numOfItn=3");
+
+		if (serviceExecTime != null) {
+			serviceExecTime.add(System.nanoTime() - startParsingTime);
+		}
 
 		if (result.equalsIgnoreCase("erroreAPI")) {
 			return response;

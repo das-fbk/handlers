@@ -13,12 +13,19 @@ import org.json.JSONObject;
 public class BlaBlaCarAPIWrapper {
 
 	public ArrayList<TripAlternativeBlaBlaCar> getBlaBlaCarAlternatives(
-			String partenza, String destinazione) {
+			String partenza, String destinazione,
+			ArrayList<Long> serviceExecTime) {
 
 		ArrayList<TripAlternativeBlaBlaCar> alternatives = new ArrayList<TripAlternativeBlaBlaCar>();
 
+		long startParsingTime = System.nanoTime();
+
 		String result = callURL("https://public-api.blablacar.com/api/v2/trips?key=0954ba4c89b34ab7b73a2d727e91d7ff&fn="
 				+ partenza + "&tn=" + destinazione + "&cur=EUR&_format=json");
+
+		if (serviceExecTime != null) {
+			serviceExecTime.add(System.nanoTime() - startParsingTime);
+		}
 
 		if (result.equalsIgnoreCase("erroreAPI")) {
 			return alternatives;

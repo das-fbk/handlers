@@ -59,7 +59,7 @@ public class BBCServiceCallExecutable extends
 			BlaBlaCarAPIWrapper blablaWrapper = new BlaBlaCarAPIWrapper();
 
 			blaBlaCarAlternatives = blablaWrapper.getBlaBlaCarAlternatives(
-					sourceValue, destinationValue);
+					sourceValue, destinationValue, null);
 
 			bot.setBlaBlaCarAlternatives(blaBlaCarAlternatives);
 

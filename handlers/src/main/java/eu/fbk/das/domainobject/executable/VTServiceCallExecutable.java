@@ -99,7 +99,7 @@ public class VTServiceCallExecutable extends
 		String coordinatesTo = googleWrapper.getCoordinates(to);
 
 		alternatives = viaggiaWrapper.getViaggiaTrentoResponse(coordinatesFrom,
-				coordinatesTo);
+				coordinatesTo, null);
 
 		result.put("ViaggiaTrento", alternatives);
 
