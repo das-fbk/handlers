@@ -115,8 +115,7 @@ public class ChooseAlternativeExecutable extends
 					break;
 				} else if (j == tokenSize - 1) {
 					found = true;
-					result = current;
-					break;
+					return result = current;
 				}
 			}
 		}

@@ -158,8 +158,11 @@ public class DVMDefineDataPatternExecutable extends
 			// PRICES
 			JSONArray prices = new JSONArray();
 			JSONObject price = new JSONObject();
-			Double priceInd = null;
-			prices = route.getJSONArray("indicativePrices");
+			Double priceInd = 0.0;
+			if (route.has("indicativePrices")) {
+				prices = route.getJSONArray("indicativePrices");
+			}
+
 			if (prices != null && prices.length() != 0) {
 				price = (JSONObject) prices.get(0);
 				// price

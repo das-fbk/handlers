@@ -45,12 +45,17 @@ public class Rome2RioAPIWrapper {
 				}
 
 				// PRICES
+				Double priceInd = 0.0;
 				JSONArray prices = new JSONArray();
-				prices = route.getJSONArray("indicativePrices");
-				JSONObject price = (JSONObject) prices.get(0);
+				if (route.has("indicativePrices")) {
+					prices = route.getJSONArray("indicativePrices");
+				}
 
-				// price
-				Double priceInd = price.getDouble("price");
+				if (prices != null && prices.length() != 0) {
+					JSONObject price = (JSONObject) prices.get(0);
+					// price
+					priceInd = price.getDouble("price");
+				}
 
 				// distance
 				Double distance = route.getDouble("distance");
