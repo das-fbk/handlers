@@ -1,4 +1,4 @@
-package eu.fbk.das.domainobject.executable;
+package eu.fbk.das.domainobject.executable.test;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.w3c.dom.Element;
 
 import se.walkercrou.places.GooglePlaces;
+import se.walkercrou.places.GooglePlacesInterface;
 import se.walkercrou.places.Place;
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.TravelAssistantBot;
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards;
@@ -56,7 +57,7 @@ public class TARefineSourcePointExecutable extends
 					"AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg");
 
 			List<Place> placesFrom = client.getPlacesByQuery(fromValue,
-					GooglePlaces.MAXIMUM_RESULTS);
+					GooglePlacesInterface.MAXIMUM_RESULTS);
 
 			// send alternatives to the user
 			// send PLAN to the user

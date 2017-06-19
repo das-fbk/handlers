@@ -34,7 +34,7 @@ public class ViaggiaTrentoAPIWrapper {
 				+ date
 				+ "&departureTime="
 				+ hour
-				+ "&transportType=TRANSIT&routeType=fastest&numOfItn=3");
+				+ "&transportType=TRANSIT&routeType=fastest&numOfItn=5");
 
 		if (result.equalsIgnoreCase("erroreAPI")) {
 			return response;
@@ -84,7 +84,7 @@ public class ViaggiaTrentoAPIWrapper {
 				leg = numbers.getJSONArray("leg");
 				String complete = "";
 
-				System.out.println("\n" + leg.length() + "\n");
+				// System.out.println("\n" + leg.length() + "\n");
 
 				for (int j = 0; j < leg.length(); j++) {
 					JSONObject legs = (JSONObject) leg.get(j);
@@ -125,8 +125,62 @@ public class ViaggiaTrentoAPIWrapper {
 		return alternatives;
 	}
 
+	public ArrayList<TravelViaggiaTrento> retrieveAlternatives(JSONObject result) {
+		ArrayList<TravelViaggiaTrento> alternatives = new ArrayList<TravelViaggiaTrento>();
+
+		JSONArray jsonArr = new JSONArray(result);
+		for (int i = 0; i < jsonArr.length(); i++) {
+
+			JSONObject numbers = (JSONObject) jsonArr.get(i);
+			ArrayList<String> routes = new ArrayList<String>();
+			ArrayList<String> steps = new ArrayList<String>();
+			ArrayList<String> routeId = new ArrayList<String>();
+
+			JSONArray leg = new JSONArray();
+			leg = numbers.getJSONArray("leg");
+			String complete = "";
+
+			// System.out.println("\n" + leg.length() + "\n");
+
+			for (int j = 0; j < leg.length(); j++) {
+				JSONObject legs = (JSONObject) leg.get(j);
+
+				JSONObject transport = (JSONObject) legs
+						.getJSONObject("transport");
+				String type = transport.getString("type").toUpperCase();
+
+				JSONObject to = (JSONObject) legs.getJSONObject("to");
+				String nameTO = to.getString("name");
+
+				JSONObject from = (JSONObject) legs.getJSONObject("from");
+				String nameFrom = from.getString("name");
+
+				if (type.equals("BUS")) {
+					routeId.add(transport.getString("routeId"));
+					String busNumber = transport.getString("routeShortName");
+					complete = "*" + busNumber + "*\n" + "          *FROM* "
+							+ nameFrom + "\n" + "          *TO* " + nameTO;
+				} else {
+					routeId.add("999");
+					complete = "\n" + "          *FROM* " + nameFrom + "\n"
+							+ "          *TO* " + nameTO;
+				}
+
+				routes.add(complete);
+				steps.add(type);
+			}
+
+			int minutes = (int) TimeUnit.MILLISECONDS.toMinutes(numbers
+					.getInt("duration"));
+			alternatives.add(new TravelViaggiaTrento("" + minutes, steps,
+					routes, routeId));
+		}
+
+		return alternatives;
+	}
+
 	public static String callURL(String myURL) {
-		System.out.println(myURL);
+		// System.out.println(myURL);
 		StringBuilder sb = new StringBuilder();
 		URLConnection urlConn = null;
 		InputStreamReader in = null;

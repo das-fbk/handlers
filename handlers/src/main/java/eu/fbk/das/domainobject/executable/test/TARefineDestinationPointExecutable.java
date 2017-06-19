@@ -1,12 +1,12 @@
-package eu.fbk.das.domainobject.executable;
+package eu.fbk.das.domainobject.executable.test;
 
 import java.util.List;
 
 import org.telegram.telegrambots.api.methods.send.SendMessage;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.w3c.dom.Element;
 
 import se.walkercrou.places.GooglePlaces;
+import se.walkercrou.places.GooglePlacesInterface;
 import se.walkercrou.places.Place;
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.TravelAssistantBot;
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards;
@@ -18,7 +18,7 @@ import eu.fbk.das.process.engine.api.domain.ProcessActivity;
 import eu.fbk.das.process.engine.api.domain.ProcessDiagram;
 import eu.fbk.das.process.engine.api.jaxb.VariableType;
 
-public class TARefineSourcePointExecutable extends
+public class TARefineDestinationPointExecutable extends
 		AbstractExecutableActivityInterface {
 
 	private ProcessEngine pe;
@@ -26,7 +26,7 @@ public class TARefineSourcePointExecutable extends
 
 	// end bot elements
 
-	public TARefineSourcePointExecutable(ProcessEngine processEngine,
+	public TARefineDestinationPointExecutable(ProcessEngine processEngine,
 			TravelAssistantBot bot) {
 		this.pe = processEngine;
 		this.bot = bot;
@@ -43,10 +43,10 @@ public class TARefineSourcePointExecutable extends
 		List<VariableType> doiState = doi.getState().getStateVariable();
 		if (doiState != null) {
 
-			// retrieve the actual from and to
-			Element from = doi.getStateVariableContentByName("From");
+			// retrieve the actual to
+			Element to = doi.getStateVariableContentByName("To");
 
-			String fromValue = from.getFirstChild().getNodeValue();
+			String toValue = to.getFirstChild().getNodeValue();
 
 			// calculate the possible completition alternative using GOOGLE API
 
@@ -55,8 +55,8 @@ public class TARefineSourcePointExecutable extends
 			GooglePlaces client = new GooglePlaces(
 					"AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg");
 
-			List<Place> placesFrom = client.getPlacesByQuery(fromValue,
-					GooglePlaces.MAXIMUM_RESULTS);
+			List<Place> placesTo = client.getPlacesByQuery(toValue,
+					GooglePlacesInterface.MAXIMUM_RESULTS);
 
 			// send alternatives to the user
 			// send PLAN to the user
@@ -70,17 +70,11 @@ public class TARefineSourcePointExecutable extends
 			sendMessage.setChatId(idString);
 
 			sendMessage.setReplyMarkup(Keyboards.keyboardAddressAlternatives(
-					id, placesFrom, "filter"));
+					id, placesTo, "filter"));
 
-			// send alternatives to the user
-			try {
-				bot.sendMessageDefault(
-						Keyboards.keyboardAddressAlternatives(
-								bot.getCurrentID(), placesFrom, "NULL"),
-						"Select the right address!");
-			} catch (TelegramApiException e1) {
-				e1.printStackTrace();
-			}
+			bot.sendMessageAlternativeAddresses(Keyboards
+					.keyboardAddressAlternatives(bot.getCurrentID(), placesTo,
+							"NULL"), "Select the right address!");
 
 		}
 		currentConcrete.setExecuted(true);

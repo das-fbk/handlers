@@ -28,9 +28,9 @@ public class Rome2RioAPIWrapper {
 			// System.out.println("routes.length(): "+routes.length());
 			for (int i = 0; i < routes.length(); i++) {
 
-				System.out.println("Soluzione " + i + ":");
+				// System.out.println("Soluzione " + i + ":");
 				JSONObject route = (JSONObject) routes.get(i);
-				System.out.println(route);
+				// System.out.println(route);
 
 				// transportation mean
 				String mean = route.getString("name");
@@ -77,7 +77,7 @@ public class Rome2RioAPIWrapper {
 
 				for (int k = 0; k < segmentsArray.length(); k++) {
 					JSONObject segment = (JSONObject) segmentsArray.get(k);
-					System.out.println("SEGMENTL " + segment);
+					// System.out.println("SEGMENTL " + segment);
 					int segmentFrom = segment.getInt("depPlace");
 					int segmentTo = segment.getInt("arrPlace");
 					int segmentVehicle = segment.getInt("vehicle");
@@ -114,6 +114,105 @@ public class Rome2RioAPIWrapper {
 			}
 		}
 		return alternatives;
+	}
+
+	public ArrayList<TripAlternativeRome2Rio> retrieveAlternatives(
+			JSONObject jsonObj) {
+		ArrayList<TripAlternativeRome2Rio> alternatives = new ArrayList<TripAlternativeRome2Rio>();
+
+		JSONArray routes = new JSONArray();
+		routes = jsonObj.getJSONArray("routes");
+		// System.out.println("routes.length(): "+routes.length());
+		for (int i = 0; i < routes.length(); i++) {
+
+			// System.out.println("Soluzione " + i + ":");
+			JSONObject route = (JSONObject) routes.get(i);
+			// System.out.println(route);
+
+			// transportation mean
+			String mean = route.getString("name");
+
+			// changes
+			JSONArray changes = new JSONArray();
+			changes = route.getJSONArray("segments");
+
+			int number_changes = -1;
+			for (int j = 0; j < changes.length(); j++) {
+				number_changes++;
+			}
+
+			// PRICES
+			Double priceInd = 0.0;
+			JSONArray prices = new JSONArray();
+			if (route.has("indicativePrices")) {
+				prices = route.getJSONArray("indicativePrices");
+				JSONObject price = (JSONObject) prices.get(0);
+				// price
+				priceInd = price.getDouble("price");
+			}
+
+			// distance
+			Double distance = route.getDouble("distance");
+
+			// duration
+			Double duration = route.getDouble("totalDuration");
+
+			// places
+			JSONArray places = new JSONArray();
+			places = jsonObj.getJSONArray("places");
+
+			// vehicles
+			JSONArray vehicles = new JSONArray();
+			vehicles = jsonObj.getJSONArray("vehicles");
+
+			// agencies
+			JSONArray agencies = new JSONArray();
+			agencies = jsonObj.getJSONArray("agencies");
+
+			// Segments Creation
+			ArrayList<Segment> segments = new ArrayList<Segment>();
+			JSONArray segmentsArray = new JSONArray();
+			segmentsArray = route.getJSONArray("segments");
+
+			for (int k = 0; k < segmentsArray.length(); k++) {
+				JSONObject segment = (JSONObject) segmentsArray.get(k);
+				// System.out.println("SEGMENTL " + segment);
+				int segmentFrom = segment.getInt("depPlace");
+				int segmentTo = segment.getInt("arrPlace");
+				int segmentVehicle = segment.getInt("vehicle");
+
+				JSONArray agencyArray = new JSONArray();
+				int agencyNumber = 999;
+				if (segment.has("agencies")) {
+					agencyArray = segment.getJSONArray("agencies");
+					JSONObject agency = (JSONObject) agencyArray.get(0);
+					agencyNumber = agency.getInt("agency");
+				}
+
+				// search From
+				String fromValue = retrievePlace(segmentFrom, places);
+				// search To
+				String toValue = retrievePlace(segmentTo, places);
+				// search Vehicle
+				String vehicleValue = retrieveVehicle(segmentVehicle, vehicles);
+				// search Agency
+				String agencyValue = retrieveAgency(agencyNumber, agencies);
+
+				// create and add the segment to the list of segments
+				Segment newSegment = new Segment(vehicleValue, agencyValue,
+						fromValue, toValue);
+				segments.add(newSegment);
+			}
+
+			TripAlternativeRome2Rio alternative = new TripAlternativeRome2Rio(
+					i, mean, priceInd, duration, distance, segments,
+					number_changes);
+			alternatives.add(alternative);
+
+		}
+
+		return alternatives;
+
 	}
 
 	public JSONObject getRome2RioResponse(String partenza, String destinazione) {
@@ -156,7 +255,7 @@ public class Rome2RioAPIWrapper {
 
 	// returns the result of the API call as string
 	public static String callURL(String myURL) {
-		System.out.println(myURL);
+		// System.out.println(myURL);
 		StringBuilder sb = new StringBuilder();
 		URLConnection urlConn = null;
 		InputStreamReader in = null;

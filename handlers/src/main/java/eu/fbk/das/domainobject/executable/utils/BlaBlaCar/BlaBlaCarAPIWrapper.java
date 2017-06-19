@@ -76,7 +76,7 @@ public class BlaBlaCarAPIWrapper {
 	}
 
 	public static String callURL(String myURL) {
-		System.out.println(myURL);
+		// System.out.println(myURL);
 		StringBuilder sb = new StringBuilder();
 		URLConnection urlConn = null;
 		InputStreamReader in = null;

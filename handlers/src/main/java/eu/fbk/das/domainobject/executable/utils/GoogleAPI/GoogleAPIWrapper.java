@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,7 +19,7 @@ public class GoogleAPIWrapper {
 		String latlng = latString + ',' + longString;
 		String URL = "https://maps.googleapis.com/maps/api/geocode/json?latlng="
 				+ latlng + "&key=" + GoogleAPIKey;
-		System.out.println(URL);
+		// System.out.println(URL);
 		String result = callURL(URL);
 		// JSON Elaboration
 		String indirizzo = "";
@@ -41,6 +42,39 @@ public class GoogleAPIWrapper {
 		}
 
 		return indirizzo;
+	}
+
+	public ArrayList<GoogleTransitAlternative> callTransit(String source,
+			String destination) {
+
+		ArrayList<GoogleTransitAlternative> alternatives = new ArrayList<GoogleTransitAlternative>();
+		String GoogleAPIKey = "AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg";
+
+		String URL = "https://maps.googleapis.com/maps/api/directions/json?origin="
+				+ source
+				+ "&destination="
+				+ destination
+				+ "&key="
+				+ GoogleAPIKey;
+		String result = callURL(URL);
+		JSONObject jsonObj = new JSONObject(result);
+		JSONArray routes = new JSONArray();
+		routes = jsonObj.getJSONArray("routes");
+		for (int i = 0; i < routes.length(); i++) {
+			GoogleTransitAlternative alternative = new GoogleTransitAlternative();
+
+			JSONObject journey = (JSONObject) routes.get(i);
+
+			// changes
+			JSONArray changes = new JSONArray();
+			changes = journey.getJSONArray("legs");
+
+			alternative.setNumber_changes(changes.length());
+			alternatives.add(alternative);
+		}
+
+		return alternatives;
+
 	}
 
 	// retrieve the information about the Province of a certain place/address.
@@ -170,7 +204,7 @@ public class GoogleAPIWrapper {
 		String URL = "https://maps.googleapis.com/maps/api/geocode/json?address="
 				+ completedFrom
 				+ "&key=AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg";
-		System.out.println(URL);
+		// System.out.println(URL);
 		String result = callURL(URL);
 		String latlong = "";
 
@@ -200,7 +234,7 @@ public class GoogleAPIWrapper {
 
 	// returns the result of the API call as string
 	public static String callURL(String myURL) {
-		System.out.println(myURL);
+		// System.out.println(myURL);
 		StringBuilder sb = new StringBuilder();
 		URLConnection urlConn = null;
 		InputStreamReader in = null;
