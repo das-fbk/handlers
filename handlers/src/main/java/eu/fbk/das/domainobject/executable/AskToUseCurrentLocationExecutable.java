@@ -33,10 +33,11 @@ public class AskToUseCurrentLocationExecutable extends
 
 		if (bot.getCurrentLocation()) {
 			// From location calculated automatically
-			currentConcrete.setExecuted(true);
 
 			Element from = doi.getStateVariableContentByName("From");
+			System.out.println("START ADDRESS: " + bot.getStart());
 			from.setTextContent(bot.getStart());
+			currentConcrete.setExecuted(true);
 			// save result in response variable
 			doi.setStateVariableContentByVarName("From", from);
 		} else if (bot.getManualLocation()) {

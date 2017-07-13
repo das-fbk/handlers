@@ -436,7 +436,9 @@ public class Keyboards {
 		List<KeyboardRow> keyboard = new ArrayList<>();
 
 		// add buttons to ask how to insert the FROM (MANUAL Or AUTOMATIC)
-		keyboard.add(keyboardLocationButton(LOCATION, false, true));
+
+		// add localization button only for mobile phone.
+		keyboard.add(keyboardLocationButton(LOCATION, true, true));
 		keyboard.add(keyboardRowButton(MANUAL));
 
 		// BACK BUTTON

@@ -540,20 +540,29 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 		GoogleAPIWrapper googleAPI = new GoogleAPIWrapper();
 		String indirizzo = googleAPI
 				.getAddress(this.getLat(), this.getLongit());
-		System.out.println("result: " + indirizzo);
-		String[] parts = indirizzo.split(",");
-		System.out.println(parts[2]);
+		// System.out.println("result: " + indirizzo);
+		// String[] parts = indirizzo.split(",");
+		// System.out.println(parts[2]);
 
-		String[] subparts = parts[2].split(" ");
-		String citta = subparts[2];
-
-		this.setStart(citta);
+		// String[] subparts = parts[2].split(" ");
+		// String citta = subparts[2];
 
 		switch (Current.getMenu(message.getChatId())) {
 		case ASKLOCATION:
+			this.setStart(indirizzo);
+			this.setSourceReceived(true);
+			this.sendMessageDefault(
+					message,
+					keyboardAskTo(message.getChatId(),
+							Database.getRome2RioDestination()), Texts
+							.textDestination(Current.getLanguage(message
+									.getChatId())));
+
+			this.setCurrentID(message.getChatId());
 			this.setCurrentLocation(true);
 			launchEffect();
 			break;
+
 		}
 	}
 

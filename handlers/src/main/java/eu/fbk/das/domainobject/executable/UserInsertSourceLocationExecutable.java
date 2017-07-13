@@ -32,11 +32,16 @@ public class UserInsertSourceLocationExecutable extends
 		if (bot.getCurrentLocation()) {
 			// From location calculated automatically and already memorized.
 			// in this case nothing to do
+			Element from = doi.getStateVariableContentByName("From");
+			from.setTextContent(bot.getStart());
+			System.out.println(bot.getStart());
+			// save result in response variable
+			doi.setStateVariableContentByVarName("From", from);
 			currentConcrete.setExecuted(true);
 
 		} else if (bot.getManualLocation()) {
 			// From will be inserted manually by the user
-			// here we memorixe the from
+			// here we memorize the from
 			if (bot.getSourceReceived()) {
 				Element from = doi.getStateVariableContentByName("From");
 				from.setTextContent(bot.getStart());
