@@ -102,20 +102,29 @@ public class ChooseAlternativeExecutable extends
 			ArrayList<TripAlternativeRome2Rio> romeToRioAlternatives,
 			String choosenAlternative) {
 		TripAlternativeRome2Rio result = null;
+		StringTokenizer stkChooseAlt = new StringTokenizer(choosenAlternative,
+				",");
+		int stkChooseAltSize = stkChooseAlt.countTokens();
 
 		for (int i = 0; i < romeToRioAlternatives.size(); i++) {
 			boolean found = false;
 			TripAlternativeRome2Rio current = romeToRioAlternatives.get(i);
 			String mean = current.getMean();
 			StringTokenizer stk = new StringTokenizer(mean, ",");
+			StringTokenizer stkChoosenAlternative = new StringTokenizer(
+					choosenAlternative, ",");
 			int tokenSize = stk.countTokens();
-			for (int j = 0; j < tokenSize; j++) {
-				String token = stk.nextToken();
-				if (!choosenAlternative.contains(token)) {
-					break;
-				} else if (j == tokenSize - 1) {
-					found = true;
-					return result = current;
+			if (tokenSize == stkChooseAltSize) {
+				for (int j = 0; j < tokenSize; j++) {
+					String token = stk.nextToken();
+					String choosenToken = stkChoosenAlternative.nextToken();
+					if (!choosenAlternative.contains(token)) {
+						break;
+					} else if (j == stkChooseAltSize - 1
+							&& choosenToken.contains(token)) {
+						found = true;
+						return result = current;
+					}
 				}
 			}
 		}

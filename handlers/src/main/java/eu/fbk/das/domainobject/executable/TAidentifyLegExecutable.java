@@ -35,6 +35,7 @@ public class TAidentifyLegExecutable extends
 	private static String hoaaName = "";
 	private static String scopeName = "";
 	private static String leg = "";
+	private DomainObjectInstance doi;
 
 	public TAidentifyLegExecutable(ProcessEngine processEngine) {
 		this.pe = processEngine;
@@ -63,7 +64,7 @@ public class TAidentifyLegExecutable extends
 			}
 		}
 
-		DomainObjectInstance doi = pe.getDomainObjectInstance(proc);
+		doi = pe.getDomainObjectInstance(proc);
 		// the host process is the process of the DO in which the HOAA is in
 		// execution
 		ProcessDiagram hostProcess = doi.getProcess();
@@ -182,8 +183,8 @@ public class TAidentifyLegExecutable extends
 		hoaaCounter++;
 
 		// setting the variables for the generated abstract activity
-		List<VariableType> actionVariable = buildActionVariables(act, mean,
-				company, departure, destination);
+		List<VariableType> actionVariable = buildRideshareActionVariables(act,
+				mean, company, departure, destination);
 		act.setActionVariables(actionVariable);
 		// update the doi state with the variables belonging to the new
 		// generated abstract activity
@@ -210,8 +211,8 @@ public class TAidentifyLegExecutable extends
 		hoaaCounter++;
 
 		// setting the variables for the generated abstract activity
-		List<VariableType> actionVariable = buildActionVariables(act, mean,
-				company, departure, destination);
+		List<VariableType> actionVariable = buildOtherMeanActionVariables(act,
+				mean, company, departure, destination);
 		act.setActionVariables(actionVariable);
 		// update the doi state with the variables belonging to the new
 		// generated abstract activity
@@ -221,8 +222,9 @@ public class TAidentifyLegExecutable extends
 		return act;
 	}
 
-	private List<VariableType> buildActionVariables(AbstractActivity activity,
-			String mean, String company, String departure, String destination) {
+	private List<VariableType> buildRideshareActionVariables(
+			AbstractActivity activity, String mean, String company,
+			String departure, String destination) {
 		String varPrefix = activity.getName() + ".";
 		List<VariableType> actionVariable = new ArrayList<VariableType>();
 		VariableType transportMean = DomainObjectsVariablesUtils.newVariable(
@@ -248,6 +250,52 @@ public class TAidentifyLegExecutable extends
 		actionVariable.add(resultList);
 		actionVariable.add(userChoice);
 		// actionVariable.add(defaultSolution);
+
+		return actionVariable;
+	}
+
+	private List<VariableType> buildOtherMeanActionVariables(
+			AbstractActivity activity, String mean, String company,
+			String departure, String destination) {
+		Element currentAlternative = null;
+		// get the domain object state
+		List<VariableType> doiState = doi.getState().getStateVariable();
+		if (doiState != null) {
+			currentAlternative = doi
+					.getStateVariableContentByName("HOAAPlanGoal");
+		}
+
+		String varPrefix = activity.getName() + ".";
+		List<VariableType> actionVariable = new ArrayList<VariableType>();
+		VariableType transportMean = DomainObjectsVariablesUtils.newVariable(
+				varPrefix, "Mean", mean);
+		VariableType companyName = DomainObjectsVariablesUtils.newVariable(
+				varPrefix, "Company", company);
+		VariableType sourcePoint = DomainObjectsVariablesUtils.newVariable(
+				varPrefix, "Source", departure);
+		VariableType destinationPoint = DomainObjectsVariablesUtils
+				.newVariable(varPrefix, "Destination", destination);
+		// VariableType resultList = DomainObjectsVariablesUtils.newVariable(
+		// varPrefix, "ResultList", "");
+		VariableType userChoice = DomainObjectsVariablesUtils.newVariable(
+				varPrefix, "UserSelection", "");
+		VariableType selectedAlternative = DomainObjectsVariablesUtils
+				.newVariable(varPrefix, "SelectedAlternative",
+						currentAlternative.getFirstChild().getNodeValue());
+		VariableType currentSegment = DomainObjectsVariablesUtils.newVariable(
+				varPrefix, "CurrentSegment", leg);
+		VariableType segmentDetails = DomainObjectsVariablesUtils.newVariable(
+				varPrefix, "ResultList", "provaprova");
+
+		actionVariable.add(transportMean);
+		actionVariable.add(companyName);
+		actionVariable.add(sourcePoint);
+		actionVariable.add(destinationPoint);
+		// actionVariable.add(resultList);
+		actionVariable.add(userChoice);
+		actionVariable.add(selectedAlternative);
+		actionVariable.add(currentSegment);
+		actionVariable.add(segmentDetails);
 
 		return actionVariable;
 	}
