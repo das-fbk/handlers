@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import eu.fbk.das.domainobject.executable.utils.GoogleAPI.GoogleAPIWrapper;
+
 public class Rome2RioAPIWrapper {
 
 	public ArrayList<TripAlternativeRome2Rio> getRome2RioAlternatives(
@@ -223,8 +225,24 @@ public class Rome2RioAPIWrapper {
 	public JSONObject getRome2RioResponse(String partenza, String destinazione) {
 
 		JSONObject response = null;
-		String result = callURL("http://free.rome2rio.com/api/1.4/json/Search?key=Yt1V3vTI&oName="
-				+ partenza + "&dName=" + destinazione);
+		// String result =
+		// callURL("http://free.rome2rio.com/api/1.4/json/Search?key=Yt1V3vTI&oName="
+		// + partenza + "&dName=" + destinazione);
+
+		// call Rome2Rio with lat and long
+		// http://free.rome2rio.com/api/1.4/xml/Search?key=Yt1V3vTI&oPos=46.074779,11.121749&oKind=addressd&dPos=41.902783,12.496366&dKind=address
+
+		GoogleAPIWrapper googleWrapper = new GoogleAPIWrapper();
+		String originCoord = googleWrapper.getCoordinates(partenza);
+		String destCoord = googleWrapper.getCoordinates(destinazione);
+		String url = "http://free.rome2rio.com/api/1.4/json/Search?key=Yt1V3vTI&oPos="
+				+ originCoord
+				+ "&oKind=addressd&dPos="
+				+ destCoord
+				+ "&dKind=address";
+
+		String result = callURL(url);
+
 		if (result.equalsIgnoreCase("erroreAPI")) {
 			return response;
 		} else {
