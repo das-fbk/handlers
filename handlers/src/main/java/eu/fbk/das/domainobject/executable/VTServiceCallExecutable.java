@@ -62,7 +62,16 @@ public class VTServiceCallExecutable extends
 			String fromValue = from.getFirstChild().getNodeValue();
 			String toValue = to.getFirstChild().getNodeValue();
 
-			this.viaggiaTrentoJson = this.CallViaggiaTrento(fromValue, toValue);
+			Element transport = doi
+					.getStateVariableContentByName("TransportType");
+			Element route = doi.getStateVariableContentByName("RouteType");
+			String transportValue = transport.getFirstChild().getNodeValue();
+			String routeValue = route.getFirstChild().getNodeValue();
+
+			// call viaggia trento con le variabili giuste
+
+			this.viaggiaTrentoJson = this.CallViaggiaTrento(fromValue, toValue,
+					transportValue, routeValue);
 			// update the PlannerOutput variable value
 			Element jsonElement = doi
 					.getStateVariableContentByName("PlannerOutput");
@@ -80,7 +89,7 @@ public class VTServiceCallExecutable extends
 			String coordinatesTo = googleWrapper.getCoordinates(toValue);
 
 			viaggiaAlternatives = viaggiaWrapper.getViaggiaTrentoRoutes(
-					coordinatesFrom, coordinatesTo);
+					coordinatesFrom, coordinatesTo, transportValue, routeValue);
 			bot.setViaggiaTrentoAlternatives(viaggiaAlternatives);
 
 		}
@@ -89,7 +98,8 @@ public class VTServiceCallExecutable extends
 		return;
 	}
 
-	private JSONObject CallViaggiaTrento(String from, String to) {
+	private JSONObject CallViaggiaTrento(String from, String to,
+			String transport, String route) {
 		ViaggiaTrentoAPIWrapper viaggiaWrapper = new ViaggiaTrentoAPIWrapper();
 		GoogleAPIWrapper googleWrapper = new GoogleAPIWrapper();
 		JSONObject result = new JSONObject();
@@ -99,7 +109,7 @@ public class VTServiceCallExecutable extends
 		String coordinatesTo = googleWrapper.getCoordinates(to);
 
 		alternatives = viaggiaWrapper.getViaggiaTrentoResponse(coordinatesFrom,
-				coordinatesTo, null);
+				coordinatesTo, null, transport, route);
 
 		result.put("ViaggiaTrento", alternatives);
 

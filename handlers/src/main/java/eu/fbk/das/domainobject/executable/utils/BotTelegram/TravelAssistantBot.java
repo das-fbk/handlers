@@ -19,8 +19,12 @@ import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandle
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardAskFromManual;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardAskTo;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardCalcola;
+import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardChooseViaggiaTrentoRouteType;
+import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardChooseViaggiaTrentoTransportType;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Keyboards.keyboardRome2RioResult;
 import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Texts.textRome2RioResult;
+import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Texts.textViaggiaTrentoRouteType;
+import static eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Texts.textViaggiaTrentoTransportType;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,6 +48,7 @@ import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.mess
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Menu;
 import eu.fbk.das.domainobject.executable.utils.BotTelegram.updateshandlers.messagging.Texts;
 import eu.fbk.das.domainobject.executable.utils.GoogleAPI.GoogleAPIWrapper;
+import eu.fbk.das.domainobject.executable.utils.Rome2Rio.TravelsRomeToRioAfterChoose;
 import eu.fbk.das.domainobject.executable.utils.Rome2Rio.TripAlternativeRome2Rio;
 import eu.fbk.das.domainobject.executable.utils.ViaggiaTrento.TravelViaggiaTrento;
 
@@ -69,6 +74,16 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 	private String ChoosenRevisedFromAddress;
 	ArrayList<TripAlternativeRome2Rio> romeToRioAlternatives;
 	ArrayList<TravelViaggiaTrento> viaggiaTrentoAlternatives;
+	TravelsRomeToRioAfterChoose Rome2RioAfterChoose;
+
+	public TravelsRomeToRioAfterChoose getRome2RioAfterChoose() {
+		return Rome2RioAfterChoose;
+	}
+
+	public void setRome2RioAfterChoose(
+			TravelsRomeToRioAfterChoose rome2RioAfterChoose) {
+		Rome2RioAfterChoose = rome2RioAfterChoose;
+	}
 
 	public ArrayList<TravelViaggiaTrento> getViaggiaTrentoAlternatives() {
 		return viaggiaTrentoAlternatives;
@@ -255,40 +270,34 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 			case DETAILS:
 				System.out.println(message.getText());
 				String option = message.getText();
-				if (option.equalsIgnoreCase("SI")) {
+				if (option.equalsIgnoreCase("Yes")) {
 					// here we define defaultData
 					// CURRENT DATE
-					Date currentDate = new Date();
-					String data = currentDate.toString();
-					this.setCurrentDate(data);
-					// DEPARTUR TIME - CURRENT TIME
-					ZonedDateTime zdt = ZonedDateTime.now();
-					String time = zdt.toString();
-					this.setDepartureTime(time);
-					// TRANSPORT TYPE - TRANSIT
-					this.setTransportType("TRANSIT");
-					// ROUTE TYPE - fastest
-					this.setRouteType("fastest");
-
-					this.setOptionalDataDefined(true);
+					System.out.println("UTENTE VUOLE METTERE DETTAGLI");
+					sendMessageDefault(message,
+							keyboardChooseViaggiaTrentoRouteType(chatId),
+							textViaggiaTrentoRouteType(Current
+									.getLanguage(chatId)));
 					/*
-					 * SendMessage sendMessage = new SendMessage()
-					 * .setChatId(message.getChatId().toString());
-					 * sendMessage.setText
-					 * ("--- CALCOLO ALTERNATIVE IN CORSO ---");
+					 * Date currentDate = new Date(); String data =
+					 * currentDate.toString(); this.setCurrentDate(data); //
+					 * DEPARTUR TIME - CURRENT TIME ZonedDateTime zdt =
+					 * ZonedDateTime.now(); String time = zdt.toString();
+					 * this.setDepartureTime(time); // TRANSPORT TYPE - TRANSIT
+					 * this.setTransportType("TRANSIT"); // ROUTE TYPE - fastest
+					 * this.setRouteType("fastest");
 					 * 
-					 * sendMessage(sendMessage);
+					 * this.setOptionalDataDefined(true);
+					 * 
+					 * sendMessageDefault( message, keyboardCalcola(chatId,
+					 * Database.getRome2RioDestination()),
+					 * "--- Route planning in progress ---");
 					 */
 
-					sendMessageDefault(
-							message,
-							keyboardCalcola(chatId,
-									Database.getRome2RioDestination()),
-							"--- Route planning in progress ---");
-
-				} else if (option.equalsIgnoreCase("NO")) {
+				} else if (option.equalsIgnoreCase("No")) {
 					// here we define defaultData
 					// CURRENT DATE
+					System.out.println("UTENTE NON VUOLE DETTAGLI");
 					Date currentDate = new Date();
 					String data = currentDate.toString();
 					this.setCurrentDate(data);
@@ -316,7 +325,7 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 							Texts.textRoutePlanning(Current.getLanguage(chatId)));
 
 				} else {
-					// choosen trip received
+
 					String fromAddress = message.getText();
 					this.setChoosenRevisedFromAddress(fromAddress);
 					Current.setMenu(chatId, Menu.REFINETOADDRESS);
@@ -325,6 +334,30 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 				}
 				launchEffect();
 				break;
+
+			case VIAGGIATRENTOROUTETYPE:
+				// set the Route Type
+				this.setRouteType(message.getText().toLowerCase());
+
+				sendMessageDefault(message,
+						keyboardChooseViaggiaTrentoTransportType(chatId),
+						textViaggiaTrentoTransportType(Current
+								.getLanguage(chatId)));
+
+				break;
+
+			case VIAGGIATRENTOTRANSPORTTYPE:
+				// set the Route TRANSPORT
+				this.setTransportType(message.getText());
+				sendMessageDefault(
+						message,
+						keyboardCalcola(chatId,
+								Database.getRome2RioDestination()),
+						Texts.textRoutePlanning(Current.getLanguage(chatId)));
+				this.setOptionalDataDefined(true);
+				// launchEffect();
+				break;
+
 			case ROME2RIORESULT:
 
 				switch (message.getText()) {
@@ -365,9 +398,11 @@ public class TravelAssistantBot extends TelegramLongPollingBot {
 									message.getText()));
 					break;
 				default:
+					// the alternative has been selected by the user
 					// choosen trip received
 					// String fromAddress = message.getText();
 					// this.setChoosenRevisedFromAddress(fromAddress);
+
 					Current.setMenu(chatId, Menu.AFTERROME2RIO);
 					this.setChoosenAlternative(message.getText());
 

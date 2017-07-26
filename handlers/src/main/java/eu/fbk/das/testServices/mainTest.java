@@ -248,7 +248,7 @@ public class mainTest {
 		BlaBlaCarAPIWrapper blablacarWrapper = new BlaBlaCarAPIWrapper();
 		ArrayList<TripAlternativeBlaBlaCar> blaBlaCarAlternatives = new ArrayList<TripAlternativeBlaBlaCar>();
 		blaBlaCarAlternatives = blablacarWrapper.getBlaBlaCarAlternatives(
-				source, destination);
+				source, destination, null);
 
 		long stopTime = System.currentTimeMillis();
 		responseTime = stopTime - startTime;
@@ -407,7 +407,8 @@ public class mainTest {
 
 		JSONArray alternatives = new JSONArray();
 
-		alternatives = viaggiaWrapper.getViaggiaTrentoResponse(from, to);
+		alternatives = viaggiaWrapper.getViaggiaTrentoResponse(from, to, null,
+				"TRANSIT", "fastest");
 
 		return alternatives;
 	}

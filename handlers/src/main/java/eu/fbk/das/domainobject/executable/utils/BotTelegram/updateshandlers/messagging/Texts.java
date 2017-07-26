@@ -328,4 +328,67 @@ public class Texts {
 		return result;
 	}
 
+	// FOR USER DETAILS
+	public static String textViaggiaTrentoRouteType(Language language) {
+		String result = "*Choose one of the following RouteType alternatives*\n";
+
+		return result;
+	}
+
+	public static String textRome2RioAfterChoose(Language language,
+			String resultR2R) {
+
+		// take all the parameters to show splitting the input string
+		String[] parts = resultR2R.split("-");
+		String position = parts[0];
+		String from = parts[1];
+		String to = parts[2];
+		String duration = parts[3];
+		String vehicle = parts[4];
+		String agency = parts[5];
+		String distance = parts[6];
+		String price = parts[7];
+
+		int durationValue = Integer.parseInt(duration);
+		double priceValue = Double.parseDouble(price);
+
+		String result = "*" + position + " LEG*\n" + "*From* " + from + "\n"
+				+ "*To* " + to + "\n";
+		String durationString = "";
+		int rest = durationValue % 60;
+		int hour = durationValue / 60;
+		if (rest < 10) {
+			durationString = hour + ".0" + rest + " h";
+		} else {
+			durationString = hour + "." + rest + " h";
+		}
+		result += "\u23F3 " + durationString + "\n" + "\u21e5 " + distance
+				+ " Km" + "\n";
+		if (priceValue != -1) {
+			result += "\uD83D\uDCB0 " + priceValue + " \u20ac" + "\n";
+		}
+		result += vehicle;
+		if (!agency.equals("999")) {
+			result += " - " + agency;
+		}
+		return result;
+
+	}
+
+	public static String textViaggiaTrentoTransportType(Language language) {
+		String result = "*Legend*\n\n";
+		result += "*TRANSIT* = Public transport\n";
+		result += "*SHAREDBIKE* = Bicycle with a constraint to move between bike sharing points\n";
+		result += "*SHAREDBIKE_WITHOUT_STATION* = Shared bicycle with a constraint to move from a bike sharing point\n";
+		result += "*CARWITHPARKING* = Private car with a constraint to move to a parking close to destination\n";
+		result += "*SHAREDCAR* = Shared car with a constraint to move between car sharing points\n";
+		result += "*SHAREDCAR_WITHOUT_STATION* = Shared car with a constraint to move from a car sharing point\n";
+		result += "*BUS* = Public bus\n";
+		result += "*TRAIN* = Trains\n";
+		result += "*WALK* = Pedestrian walk\n\n";
+		result += "*Choose one of the following TransportType alternatives*\n";
+
+		return result;
+	}
+
 }

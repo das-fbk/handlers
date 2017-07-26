@@ -16,7 +16,8 @@ import org.json.JSONObject;
 public class ViaggiaTrentoAPIWrapper {
 
 	public JSONArray getViaggiaTrentoResponse(String coordinatesFrom,
-			String coordinatesTo, ArrayList<Long> serviceExecTime) {
+			String coordinatesTo, ArrayList<Long> serviceExecTime,
+			String transport, String route) {
 
 		JSONArray response = null;
 		String dateHour = new SimpleDateFormat("MM/dd/yyyy HH:mm:mm")
@@ -35,7 +36,9 @@ public class ViaggiaTrentoAPIWrapper {
 				+ date
 				+ "&departureTime="
 				+ hour
-				+ "&transportType=TRANSIT&routeType=fastest&numOfItn=5");
+				+ "&transportType="
+				+ transport
+				+ "&routeType=" + route + "&numOfItn=5");
 
 		if (serviceExecTime != null) {
 			serviceExecTime.add(System.nanoTime() - startParsingTime);
@@ -52,7 +55,8 @@ public class ViaggiaTrentoAPIWrapper {
 	}
 
 	public ArrayList<TravelViaggiaTrento> getViaggiaTrentoRoutes(
-			String coordinatesFrom, String coordinatesTo) {
+			String coordinatesFrom, String coordinatesTo, String transportType,
+			String routeType) {
 
 		String dateHour = new SimpleDateFormat("MM/dd/yyyy HH:mm:mm")
 				.format(Calendar.getInstance().getTime());
@@ -70,7 +74,9 @@ public class ViaggiaTrentoAPIWrapper {
 				+ date
 				+ "&departureTime="
 				+ hour
-				+ "&transportType=TRANSIT&routeType=fastest&numOfItn=3");
+				+ "&transportType="
+				+ transportType
+				+ "&routeType=" + routeType + "&numOfItn=3");
 
 		if (result.equalsIgnoreCase("erroreAPI")) {
 			return alternatives;

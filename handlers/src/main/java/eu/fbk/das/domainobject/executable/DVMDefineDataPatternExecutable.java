@@ -114,6 +114,23 @@ public class DVMDefineDataPatternExecutable extends
 					// save result in response variable
 					doi.setStateVariableContentByVarName("DataPattern",
 							dataPatternElement);
+				} else if (service.equalsIgnoreCase("Rome2RioChoosen")) {
+					// update the PlanList variable value
+					Element planElement = doi
+							.getStateVariableContentByName("PlanList");
+					planElement.setTextContent(PlannerOutputValue);
+					// save result in response variable
+					doi.setStateVariableContentByVarName("PlanList",
+							planElement);
+
+					// memorize the DataPattern in to the variable
+					Element dataPatternElement = doi
+							.getStateVariableContentByName("DataPattern");
+					dataPatternElement.setTextContent("Rome2RioChoosen");
+					// save result in response variable
+					doi.setStateVariableContentByVarName("DataPattern",
+							dataPatternElement);
+
 				}
 			} else {
 				Element planElement = doi

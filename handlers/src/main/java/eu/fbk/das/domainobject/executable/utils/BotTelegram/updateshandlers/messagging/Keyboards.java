@@ -55,6 +55,45 @@ public class Keyboards {
 		return travelsBlaBlaCar;
 	}
 
+	// Keyboard to ask user DETAILS
+	public static ReplyKeyboardMarkup keyboardChooseViaggiaTrentoRouteType(
+			long chatId) {
+		ReplyKeyboardMarkup replyKeyboardMarkup = keyboard();
+		List<KeyboardRow> keyboard = new ArrayList<>();
+
+		keyboard.add(keyboardRowButton("fastest".toUpperCase()));
+		keyboard.add(keyboardRowButton("healthy".toUpperCase()));
+		keyboard.add(keyboardRowButton("leastWalking".toUpperCase()));
+		keyboard.add(keyboardRowButton("leastChanges".toUpperCase()));
+		keyboard.add(keyboardRowButton("greenest".toUpperCase()));
+
+		replyKeyboardMarkup.setKeyboard(keyboard);
+
+		Current.setMenu(chatId, Menu.VIAGGIATRENTOROUTETYPE);
+		return replyKeyboardMarkup.setOneTimeKeyboad(true);
+	}
+
+	public static ReplyKeyboardMarkup keyboardChooseViaggiaTrentoTransportType(
+			long chatId) {
+		ReplyKeyboardMarkup replyKeyboardMarkup = keyboard();
+		List<KeyboardRow> keyboard = new ArrayList<>();
+
+		keyboard.add(keyboardRowButton("TRANSIT"));
+		keyboard.add(keyboardRowButton("SHAREDBIKE"));
+		keyboard.add(keyboardRowButton("SHAREDBIKE_WITHOUT_STATION"));
+		keyboard.add(keyboardRowButton("CARWITHPARKING"));
+		keyboard.add(keyboardRowButton("SHAREDCAR"));
+		keyboard.add(keyboardRowButton("SHAREDCAR_WITHOUT_STATION"));
+		keyboard.add(keyboardRowButton("BUS"));
+		keyboard.add(keyboardRowButton("TRAIN"));
+		keyboard.add(keyboardRowButton("WALK"));
+
+		replyKeyboardMarkup.setKeyboard(keyboard);
+
+		Current.setMenu(chatId, Menu.VIAGGIATRENTOTRANSPORTTYPE);
+		return replyKeyboardMarkup.setOneTimeKeyboad(true);
+	}
+
 	// keyboards for the API
 	public static ReplyKeyboardMarkup keyboardRome2RioResult(long chatId,
 			ArrayList<TripAlternativeRome2Rio> alternatives, String filter) {
@@ -119,237 +158,153 @@ public class Keyboards {
 		return replyKeyboardMarkup;
 	}
 
-	public static String setKeyboardJourneyOption(String mean) {
-
-		mean = Pattern.compile("Night train", Pattern.LITERAL).matcher(mean)
-				.replaceAll(Matcher.quoteReplacement("Night_trai"));
-
-		mean = Pattern.compile("night train", Pattern.LITERAL).matcher(mean)
-				.replaceAll(Matcher.quoteReplacement("night_trai"));
-
-		mean = Pattern.compile("Night bus", Pattern.LITERAL).matcher(mean)
-				.replaceAll(Matcher.quoteReplacement("Night_bu"));
-
-		mean = Pattern.compile("night bus", Pattern.LITERAL).matcher(mean)
-				.replaceAll(Matcher.quoteReplacement("night_bu"));
-
-		mean = Pattern.compile("Car ferry", Pattern.LITERAL).matcher(mean)
-				.replaceAll(Matcher.quoteReplacement("Car_ferr"));
-
-		mean = Pattern.compile("car ferry", Pattern.LITERAL).matcher(mean)
-				.replaceAll(Matcher.quoteReplacement("car_ferr"));
-
-		if (mean.contains("Line")) {
-			mean = Pattern
-					.compile(mean.substring(0, mean.indexOf("train")),
-							Pattern.LITERAL).matcher(mean)
-					.replaceAll(Matcher.quoteReplacement("Train"));
-		}
-
-		if (mean.contains("line")) {
-			mean = Pattern
-					.compile(mean.substring(0, mean.indexOf("train")),
-							Pattern.LITERAL).matcher(mean)
-					.replaceAll(Matcher.quoteReplacement("train"));
-		}
-
-		// train
-		mean = Pattern.compile(", train to", Pattern.LITERAL).matcher(mean)
-				.replaceAll(Matcher.quoteReplacement(" to"));
-
-		mean = Pattern
-				.compile("Train", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceFirst(
-						Matcher.quoteReplacement("\uD83D\uDE84 " + "Train"));
-
-		mean = Pattern
-				.compile("train", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceAll(Matcher.quoteReplacement("\uD83D\uDE84 " + "train"));
-
-		// night train
-		mean = Pattern
-				.compile("Night_trai", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceFirst(
-						Matcher.quoteReplacement("\uD83D\uDE86 "
-								+ "Night train"));
-
-		mean = Pattern
-				.compile("night_trai", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceAll(
-						Matcher.quoteReplacement("\uD83D\uDE86 "
-								+ "night train"));
-
-		// bus
-		mean = Pattern
-				.compile("Bus", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceFirst(Matcher.quoteReplacement("\uD83D\uDE8C " + "Bus"));
-
-		mean = Pattern.compile("bus", Pattern.LITERAL).matcher(mean)
-				.replaceAll(Matcher.quoteReplacement("\uD83D\uDE8C " + "bus"));
-
-		// night bus
-		mean = Pattern
-				.compile("Night_bu", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceFirst(
-						Matcher.quoteReplacement("\ud83d\ude8d " + "Night bus"));
-
-		mean = Pattern
-				.compile("night_bu", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceAll(
-						Matcher.quoteReplacement("\ud83d\ude8d " + "night bus"));
-
-		// drive
-		mean = Pattern
-				.compile("Drive", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceFirst(
-						Matcher.quoteReplacement("\uD83D\uDE98 " + "Drive"));
-
-		mean = Pattern
-				.compile("drive", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceAll(Matcher.quoteReplacement("\uD83D\uDE98 " + "drive"));
-
-		// car ferry
-		mean = Pattern
-				.compile("Car_ferr", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceFirst(Matcher.quoteReplacement("\u26F4 " + "Car ferry"));
-
-		mean = Pattern.compile("car_ferr", Pattern.LITERAL).matcher(mean)
-				.replaceAll(Matcher.quoteReplacement("\u26F4 " + "car ferry"));
-
-		// ferry
-		mean = Pattern.compile("Ferry", Pattern.LITERAL).matcher(mean)
-				.replaceFirst(Matcher.quoteReplacement("\u26F4 " + "Ferry"));
-
-		mean = Pattern.compile("ferry", Pattern.LITERAL).matcher(mean)
-				.replaceAll(Matcher.quoteReplacement("\u26F4 " + "ferry"));
-
-		// fly
-		mean = Pattern
-				.compile("Fly", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceFirst(Matcher.quoteReplacement("\uD83D\uDEEB " + "Fly"));
-
-		mean = Pattern.compile("fly", Pattern.LITERAL).matcher(mean)
-				.replaceAll(Matcher.quoteReplacement("\uD83D\uDEEB " + "fly"));
-
-		// shuttle
-		mean = Pattern
-				.compile("Shuttle", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceFirst(
-						Matcher.quoteReplacement("\uD83D\uDE90 " + "Shuttle"));
-
-		mean = Pattern
-				.compile("shuttle", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceAll(
-						Matcher.quoteReplacement("\uD83D\uDE90 " + "shuttle"));
-
-		// rideshare
-		mean = Pattern
-				.compile("Rideshare", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceFirst(
-						Matcher.quoteReplacement("\uD83C\uDFCE " + "Rideshare"));
-
-		mean = Pattern
-				.compile("rideshare", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceAll(
-						Matcher.quoteReplacement("\uD83C\uDFCE " + "rideshare"));
-
-		// eurotunnel
-		mean = Pattern
-				.compile("Eurotunnel", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceFirst(
-						Matcher.quoteReplacement("\uD83D\uDD73 " + "Eurotunnel"));
-
-		mean = Pattern
-				.compile("eurotunnel", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceAll(
-						Matcher.quoteReplacement("\uD83D\uDD73 " + "eurotunnel"));
-
-		// taxi
-		mean = Pattern
-				.compile("Taxi", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceFirst(
-						Matcher.quoteReplacement("\ud83d\ude95 " + "Taxi"));
-
-		mean = Pattern.compile("taxi", Pattern.LITERAL).matcher(mean)
-				.replaceAll(Matcher.quoteReplacement("\ud83d\ude95 " + "taxi"));
-
-		// unknown
-		mean = Pattern.compile("Unknown", Pattern.LITERAL).matcher(mean)
-				.replaceFirst(Matcher.quoteReplacement("\u2047 " + "Unknown"));
-
-		mean = Pattern.compile("unknown", Pattern.LITERAL).matcher(mean)
-				.replaceAll(Matcher.quoteReplacement("\u2047 " + "unknown"));
-
-		// helicopter
-		mean = Pattern
-				.compile("Helicopter", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceFirst(
-						Matcher.quoteReplacement("\ud83d\ude81 " + "Helicopter"));
-
-		mean = Pattern
-				.compile("helicopter", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceAll(
-						Matcher.quoteReplacement("\ud83d\ude81 " + "helicopter"));
-
-		// tram
-		mean = Pattern
-				.compile("Tram", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceFirst(
-						Matcher.quoteReplacement("\ud83d\ude8b " + "Tram"));
-
-		mean = Pattern.compile("tram", Pattern.LITERAL).matcher(mean)
-				.replaceAll(Matcher.quoteReplacement("\ud83d\ude8b " + "tram"));
-
-		// bicycle
-		mean = Pattern
-				.compile("Bicycle", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceFirst(
-						Matcher.quoteReplacement("\ud83d\udeb2 " + "Bicycle"));
-
-		mean = Pattern
-				.compile("bicycle", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceAll(
-						Matcher.quoteReplacement("\ud83d\udeb2 " + "bicycle"));
-
-		// animal
-		mean = Pattern
-				.compile("Animal", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceFirst(
-						Matcher.quoteReplacement("\ud83d\udc2b " + "Animal"));
-
-		mean = Pattern
-				.compile("animal", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceAll(
-						Matcher.quoteReplacement("\ud83d\udc2b " + "animal"));
-
-		return mean;
-	}
-
+	/*
+	 * public static String setKeyboardJourneyOption(String mean) {
+	 * 
+	 * mean = Pattern.compile("Night train", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("Night_trai"));
+	 * 
+	 * mean = Pattern.compile("night train", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("night_trai"));
+	 * 
+	 * mean = Pattern.compile("Night bus", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("Night_bu"));
+	 * 
+	 * mean = Pattern.compile("night bus", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("night_bu"));
+	 * 
+	 * mean = Pattern.compile("Car ferry", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("Car_ferr"));
+	 * 
+	 * mean = Pattern.compile("car ferry", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("car_ferr"));
+	 * 
+	 * if (mean.contains("Line")) { mean = Pattern .compile(mean.substring(0,
+	 * mean.indexOf("train")), Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("Train")); }
+	 * 
+	 * if (mean.contains("line")) { mean = Pattern .compile(mean.substring(0,
+	 * mean.indexOf("train")), Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("train")); }
+	 * 
+	 * // train mean = Pattern.compile(", train to",
+	 * Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement(" to"));
+	 * 
+	 * mean = Pattern .compile("Train", Pattern.LITERAL) .matcher(mean)
+	 * .replaceFirst( Matcher.quoteReplacement("\uD83D\uDE84 " + "Train"));
+	 * 
+	 * mean = Pattern .compile("train", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("\uD83D\uDE84 " + "train"));
+	 * 
+	 * // night train mean = Pattern .compile("Night_trai", Pattern.LITERAL)
+	 * .matcher(mean) .replaceFirst( Matcher.quoteReplacement("\uD83D\uDE86 " +
+	 * "Night train"));
+	 * 
+	 * mean = Pattern .compile("night_trai", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement("\uD83D\uDE86 " + "night train"));
+	 * 
+	 * // bus mean = Pattern .compile("Bus", Pattern.LITERAL) .matcher(mean)
+	 * .replaceFirst(Matcher.quoteReplacement("\uD83D\uDE8C " + "Bus"));
+	 * 
+	 * mean = Pattern.compile("bus", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("\uD83D\uDE8C " + "bus"));
+	 * 
+	 * // night bus mean = Pattern .compile("Night_bu", Pattern.LITERAL)
+	 * .matcher(mean) .replaceFirst( Matcher.quoteReplacement("\ud83d\ude8d " +
+	 * "Night bus"));
+	 * 
+	 * mean = Pattern .compile("night_bu", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement("\ud83d\ude8d " + "night bus"));
+	 * 
+	 * // drive mean = Pattern .compile("Drive", Pattern.LITERAL) .matcher(mean)
+	 * .replaceFirst( Matcher.quoteReplacement("\uD83D\uDE98 " + "Drive"));
+	 * 
+	 * mean = Pattern .compile("drive", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("\uD83D\uDE98 " + "drive"));
+	 * 
+	 * // car ferry mean = Pattern .compile("Car_ferr", Pattern.LITERAL)
+	 * .matcher(mean) .replaceFirst(Matcher.quoteReplacement("\u26F4 " +
+	 * "Car ferry"));
+	 * 
+	 * mean = Pattern.compile("car_ferr", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("\u26F4 " + "car ferry"));
+	 * 
+	 * // ferry mean = Pattern.compile("Ferry", Pattern.LITERAL).matcher(mean)
+	 * .replaceFirst(Matcher.quoteReplacement("\u26F4 " + "Ferry"));
+	 * 
+	 * mean = Pattern.compile("ferry", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("\u26F4 " + "ferry"));
+	 * 
+	 * // fly mean = Pattern .compile("Fly", Pattern.LITERAL) .matcher(mean)
+	 * .replaceFirst(Matcher.quoteReplacement("\uD83D\uDEEB " + "Fly"));
+	 * 
+	 * mean = Pattern.compile("fly", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("\uD83D\uDEEB " + "fly"));
+	 * 
+	 * // shuttle mean = Pattern .compile("Shuttle", Pattern.LITERAL)
+	 * .matcher(mean) .replaceFirst( Matcher.quoteReplacement("\uD83D\uDE90 " +
+	 * "Shuttle"));
+	 * 
+	 * mean = Pattern .compile("shuttle", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement("\uD83D\uDE90 " + "shuttle"));
+	 * 
+	 * // rideshare mean = Pattern .compile("Rideshare", Pattern.LITERAL)
+	 * .matcher(mean) .replaceFirst( Matcher.quoteReplacement("\uD83C\uDFCE " +
+	 * "Rideshare"));
+	 * 
+	 * mean = Pattern .compile("rideshare", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement("\uD83C\uDFCE " + "rideshare"));
+	 * 
+	 * // eurotunnel mean = Pattern .compile("Eurotunnel", Pattern.LITERAL)
+	 * .matcher(mean) .replaceFirst( Matcher.quoteReplacement("\uD83D\uDD73 " +
+	 * "Eurotunnel"));
+	 * 
+	 * mean = Pattern .compile("eurotunnel", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement("\uD83D\uDD73 " + "eurotunnel"));
+	 * 
+	 * // taxi mean = Pattern .compile("Taxi", Pattern.LITERAL) .matcher(mean)
+	 * .replaceFirst( Matcher.quoteReplacement("\ud83d\ude95 " + "Taxi"));
+	 * 
+	 * mean = Pattern.compile("taxi", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("\ud83d\ude95 " + "taxi"));
+	 * 
+	 * // unknown mean = Pattern.compile("Unknown",
+	 * Pattern.LITERAL).matcher(mean)
+	 * .replaceFirst(Matcher.quoteReplacement("\u2047 " + "Unknown"));
+	 * 
+	 * mean = Pattern.compile("unknown", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("\u2047 " + "unknown"));
+	 * 
+	 * // helicopter mean = Pattern .compile("Helicopter", Pattern.LITERAL)
+	 * .matcher(mean) .replaceFirst( Matcher.quoteReplacement("\ud83d\ude81 " +
+	 * "Helicopter"));
+	 * 
+	 * mean = Pattern .compile("helicopter", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement("\ud83d\ude81 " + "helicopter"));
+	 * 
+	 * // tram mean = Pattern .compile("Tram", Pattern.LITERAL) .matcher(mean)
+	 * .replaceFirst( Matcher.quoteReplacement("\ud83d\ude8b " + "Tram"));
+	 * 
+	 * mean = Pattern.compile("tram", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("\ud83d\ude8b " + "tram"));
+	 * 
+	 * // bicycle mean = Pattern .compile("Bicycle", Pattern.LITERAL)
+	 * .matcher(mean) .replaceFirst( Matcher.quoteReplacement("\ud83d\udeb2 " +
+	 * "Bicycle"));
+	 * 
+	 * mean = Pattern .compile("bicycle", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement("\ud83d\udeb2 " + "bicycle"));
+	 * 
+	 * // animal mean = Pattern .compile("Animal", Pattern.LITERAL)
+	 * .matcher(mean) .replaceFirst( Matcher.quoteReplacement("\ud83d\udc2b " +
+	 * "Animal"));
+	 * 
+	 * mean = Pattern .compile("animal", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement("\ud83d\udc2b " + "animal"));
+	 * 
+	 * return mean; }
+	 */
 	// viaggiaTrento
 	public static ReplyKeyboardMarkup keyboardChooseStartViaggiaTrento(
 			long chatId, ArrayList<TravelViaggiaTrento> alternatives) {
@@ -545,7 +500,7 @@ public class Keyboards {
 	 * // Current.setMenu(chatId, menu); return replyKeyboardMarkup; }
 	 */
 
-	public static String setKeyboardJourneyOption(String index, String mean) {
+	public static String setKeyboardJourneyOption(String mean) {
 
 		mean = Pattern.compile("Night train", Pattern.LITERAL).matcher(mean)
 				.replaceAll(Matcher.quoteReplacement("Night_trai"));
@@ -579,6 +534,7 @@ public class Keyboards {
 					.replaceAll(Matcher.quoteReplacement("train"));
 		}
 
+		// train
 		mean = Pattern.compile(", train to", Pattern.LITERAL).matcher(mean)
 				.replaceAll(Matcher.quoteReplacement(" to"));
 
@@ -586,159 +542,354 @@ public class Keyboards {
 				.compile("Train", Pattern.LITERAL)
 				.matcher(mean)
 				.replaceFirst(
-						Matcher.quoteReplacement(index + "-" + "\uD83D\uDE84"
-								+ "Train"));
+						Matcher.quoteReplacement("\uD83D\uDE84 " + "Train"));
 
 		mean = Pattern
 				.compile("train", Pattern.LITERAL)
 				.matcher(mean)
-				.replaceAll(
-						Matcher.quoteReplacement(index + "-" + "\uD83D\uDE84"
-								+ "train"));
+				.replaceAll(Matcher.quoteReplacement("\uD83D\uDE84 " + "train"));
 
+		// night train
 		mean = Pattern
 				.compile("Night_trai", Pattern.LITERAL)
 				.matcher(mean)
 				.replaceFirst(
-						Matcher.quoteReplacement(index + "-" + "\uD83D\uDE86"
+						Matcher.quoteReplacement("\uD83D\uDE86 "
 								+ "Night train"));
 
 		mean = Pattern
 				.compile("night_trai", Pattern.LITERAL)
 				.matcher(mean)
 				.replaceAll(
-						Matcher.quoteReplacement(index + "-" + "\uD83D\uDE86"
+						Matcher.quoteReplacement("\uD83D\uDE86 "
 								+ "night train"));
 
+		// bus
 		mean = Pattern
 				.compile("Bus", Pattern.LITERAL)
 				.matcher(mean)
-				.replaceFirst(
-						Matcher.quoteReplacement(index + "-" + "\uD83D\uDE8C"
-								+ "Bus"));
+				.replaceFirst(Matcher.quoteReplacement("\uD83D\uDE8C " + "Bus"));
 
-		mean = Pattern
-				.compile("bus", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceAll(
-						Matcher.quoteReplacement(index + "-" + "\uD83D\uDE8C"
-								+ "bus"));
+		mean = Pattern.compile("bus", Pattern.LITERAL).matcher(mean)
+				.replaceAll(Matcher.quoteReplacement("\uD83D\uDE8C " + "bus"));
 
+		// night bus
 		mean = Pattern
 				.compile("Night_bu", Pattern.LITERAL)
 				.matcher(mean)
 				.replaceFirst(
-						Matcher.quoteReplacement(index + "-" + "\ud83d\ude8d"
-								+ "Night bus"));
+						Matcher.quoteReplacement("\ud83d\ude8d " + "Night bus"));
 
 		mean = Pattern
 				.compile("night_bu", Pattern.LITERAL)
 				.matcher(mean)
 				.replaceAll(
-						Matcher.quoteReplacement(index + "-" + "\ud83d\ude8d"
-								+ "night bus"));
+						Matcher.quoteReplacement("\ud83d\ude8d " + "night bus"));
 
+		// drive
 		mean = Pattern
 				.compile("Drive", Pattern.LITERAL)
 				.matcher(mean)
 				.replaceFirst(
-						Matcher.quoteReplacement(index + "-" + "\uD83D\uDE98"
-								+ "Drive"));
+						Matcher.quoteReplacement("\uD83D\uDE98 " + "Drive"));
 
 		mean = Pattern
 				.compile("drive", Pattern.LITERAL)
 				.matcher(mean)
-				.replaceAll(
-						Matcher.quoteReplacement(index + "-" + "\uD83D\uDE98"
-								+ "drive"));
+				.replaceAll(Matcher.quoteReplacement("\uD83D\uDE98 " + "drive"));
 
+		// national-rail
+		mean = Pattern
+				.compile("National-rail", Pattern.LITERAL)
+				.matcher(mean)
+				.replaceFirst(
+						Matcher.quoteReplacement("\uD83D\uDE84 "
+								+ "National-rail"));
+
+		mean = Pattern
+				.compile("national-rail", Pattern.LITERAL)
+				.matcher(mean)
+				.replaceAll(
+						Matcher.quoteReplacement("\uD83D\uDE84 "
+								+ "national-rail"));
+
+		// car ferry
 		mean = Pattern
 				.compile("Car_ferr", Pattern.LITERAL)
 				.matcher(mean)
-				.replaceFirst(
-						Matcher.quoteReplacement(index + "-" + "\u26F4"
-								+ "Car ferry"));
+				.replaceFirst(Matcher.quoteReplacement("\u26F4 " + "Car ferry"));
 
-		mean = Pattern
-				.compile("car_ferr", Pattern.LITERAL)
-				.matcher(mean)
-				.replaceAll(
-						Matcher.quoteReplacement(index + "-" + "\u26F4"
-								+ "car ferry"));
+		mean = Pattern.compile("car_ferr", Pattern.LITERAL).matcher(mean)
+				.replaceAll(Matcher.quoteReplacement("\u26F4 " + "car ferry"));
 
+		// ferry
+		mean = Pattern.compile("Ferry", Pattern.LITERAL).matcher(mean)
+				.replaceFirst(Matcher.quoteReplacement("\u26F4 " + "Ferry"));
+
+		mean = Pattern.compile("ferry", Pattern.LITERAL).matcher(mean)
+				.replaceAll(Matcher.quoteReplacement("\u26F4 " + "ferry"));
+
+		// fly
 		mean = Pattern
 				.compile("Fly", Pattern.LITERAL)
 				.matcher(mean)
+				.replaceFirst(Matcher.quoteReplacement("\uD83D\uDEEB " + "Fly"));
+
+		mean = Pattern.compile("fly", Pattern.LITERAL).matcher(mean)
+				.replaceAll(Matcher.quoteReplacement("\uD83D\uDEEB " + "fly"));
+
+		// plane
+		mean = Pattern
+				.compile("Plane", Pattern.LITERAL)
+				.matcher(mean)
 				.replaceFirst(
-						Matcher.quoteReplacement(index + "-" + "\uD83D\uDEEB"
-								+ "Fly"));
+						Matcher.quoteReplacement("\uD83D\uDEEB " + "Plane"));
 
 		mean = Pattern
-				.compile("fly", Pattern.LITERAL)
+				.compile("plane", Pattern.LITERAL)
 				.matcher(mean)
-				.replaceAll(
-						Matcher.quoteReplacement(index + "-" + "\uD83D\uDEEB"
-								+ "fly"));
+				.replaceAll(Matcher.quoteReplacement("\uD83D\uDEEB " + "plane"));
 
+		// shuttle
 		mean = Pattern
 				.compile("Shuttle", Pattern.LITERAL)
 				.matcher(mean)
 				.replaceFirst(
-						Matcher.quoteReplacement(index + "-" + "\uD83D\uDE90"
-								+ "Shuttle"));
+						Matcher.quoteReplacement("\uD83D\uDE90 " + "Shuttle"));
 
 		mean = Pattern
 				.compile("shuttle", Pattern.LITERAL)
 				.matcher(mean)
 				.replaceAll(
-						Matcher.quoteReplacement(index + "-" + "\uD83D\uDE90"
-								+ "shuttle"));
+						Matcher.quoteReplacement("\uD83D\uDE90 " + "shuttle"));
 
+		// rideshare
 		mean = Pattern
 				.compile("Rideshare", Pattern.LITERAL)
 				.matcher(mean)
 				.replaceFirst(
-						Matcher.quoteReplacement(index + "-" + "\uD83C\uDFCE"
-								+ "Rideshare"));
+						Matcher.quoteReplacement("\uD83C\uDFCE " + "Rideshare"));
 
 		mean = Pattern
 				.compile("rideshare", Pattern.LITERAL)
 				.matcher(mean)
 				.replaceAll(
-						Matcher.quoteReplacement(index + "-" + "\uD83C\uDFCE"
-								+ "rideshare"));
+						Matcher.quoteReplacement("\uD83C\uDFCE " + "rideshare"));
 
+		// walk
+		mean = Pattern
+				.compile("Walk", Pattern.LITERAL)
+				.matcher(mean)
+				.replaceFirst(
+						Matcher.quoteReplacement("\ud83c\udfc3 " + "Walk"));
+
+		mean = Pattern.compile("walk", Pattern.LITERAL).matcher(mean)
+				.replaceAll(Matcher.quoteReplacement("\ud83c\udfc3 " + "walk"));
+
+		// eurotunnel
 		mean = Pattern
 				.compile("Eurotunnel", Pattern.LITERAL)
 				.matcher(mean)
 				.replaceFirst(
-						Matcher.quoteReplacement(index + "-" + "\uD83D\uDD73"
-								+ "Eurotunnel"));
+						Matcher.quoteReplacement("\uD83D\uDD73 " + "Eurotunnel"));
 
 		mean = Pattern
 				.compile("eurotunnel", Pattern.LITERAL)
 				.matcher(mean)
 				.replaceAll(
-						Matcher.quoteReplacement(index + "-" + "\uD83D\uDD73"
-								+ "eurotunnel"));
+						Matcher.quoteReplacement("\uD83D\uDD73 " + "eurotunnel"));
 
+		// taxi
 		mean = Pattern
 				.compile("Taxi", Pattern.LITERAL)
 				.matcher(mean)
 				.replaceFirst(
-						Matcher.quoteReplacement(index + "-" + "\ud83d\ude95"
-								+ "Taxi"));
+						Matcher.quoteReplacement("\ud83d\ude95 " + "Taxi"));
+
+		mean = Pattern.compile("taxi", Pattern.LITERAL).matcher(mean)
+				.replaceAll(Matcher.quoteReplacement("\ud83d\ude95 " + "taxi"));
+
+		// unknown
+		mean = Pattern.compile("Unknown", Pattern.LITERAL).matcher(mean)
+				.replaceFirst(Matcher.quoteReplacement("\u2047 " + "Unknown"));
+
+		mean = Pattern.compile("unknown", Pattern.LITERAL).matcher(mean)
+				.replaceAll(Matcher.quoteReplacement("\u2047 " + "unknown"));
+
+		// helicopter
+		mean = Pattern
+				.compile("Helicopter", Pattern.LITERAL)
+				.matcher(mean)
+				.replaceFirst(
+						Matcher.quoteReplacement("\ud83d\ude81 " + "Helicopter"));
 
 		mean = Pattern
-				.compile("taxi", Pattern.LITERAL)
+				.compile("helicopter", Pattern.LITERAL)
 				.matcher(mean)
 				.replaceAll(
-						Matcher.quoteReplacement(index + "-" + "\ud83d\ude95"
-								+ "taxi"));
+						Matcher.quoteReplacement("\ud83d\ude81 " + "helicopter"));
+		// tram
+		mean = Pattern
+				.compile("Tram", Pattern.LITERAL)
+				.matcher(mean)
+				.replaceFirst(
+						Matcher.quoteReplacement("\ud83d\ude8b " + "Tram"));
+
+		mean = Pattern.compile("tram", Pattern.LITERAL).matcher(mean)
+				.replaceAll(Matcher.quoteReplacement("\ud83d\ude8b " + "tram"));
+
+		// bicycle
+		mean = Pattern
+				.compile("Bicycle", Pattern.LITERAL)
+				.matcher(mean)
+				.replaceFirst(
+						Matcher.quoteReplacement("\ud83d\udeb2 " + "Bicycle"));
+
+		mean = Pattern
+				.compile("bicycle", Pattern.LITERAL)
+				.matcher(mean)
+				.replaceAll(
+						Matcher.quoteReplacement("\ud83d\udeb2 " + "bicycle"));
+
+		// animal
+		mean = Pattern
+				.compile("Animal", Pattern.LITERAL)
+				.matcher(mean)
+				.replaceFirst(
+						Matcher.quoteReplacement("\ud83d\udc2b " + "Animal"));
+
+		mean = Pattern
+				.compile("animal", Pattern.LITERAL)
+				.matcher(mean)
+				.replaceAll(
+						Matcher.quoteReplacement("\ud83d\udc2b " + "animal"));
 
 		return mean;
 	}
 
+	/*
+	 * public static String setKeyboardJourneyOption(String index, String mean)
+	 * {
+	 * 
+	 * mean = Pattern.compile("Night train", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("Night_trai"));
+	 * 
+	 * mean = Pattern.compile("night train", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("night_trai"));
+	 * 
+	 * mean = Pattern.compile("Night bus", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("Night_bu"));
+	 * 
+	 * mean = Pattern.compile("night bus", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("night_bu"));
+	 * 
+	 * mean = Pattern.compile("Car ferry", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("Car_ferr"));
+	 * 
+	 * mean = Pattern.compile("car ferry", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("car_ferr"));
+	 * 
+	 * if (mean.contains("Line")) { mean = Pattern .compile(mean.substring(0,
+	 * mean.indexOf("train")), Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("Train")); }
+	 * 
+	 * if (mean.contains("line")) { mean = Pattern .compile(mean.substring(0,
+	 * mean.indexOf("train")), Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement("train")); }
+	 * 
+	 * mean = Pattern.compile(", train to", Pattern.LITERAL).matcher(mean)
+	 * .replaceAll(Matcher.quoteReplacement(" to"));
+	 * 
+	 * mean = Pattern .compile("Train", Pattern.LITERAL) .matcher(mean)
+	 * .replaceFirst( Matcher.quoteReplacement(index + "-" + "\uD83D\uDE84" +
+	 * "Train"));
+	 * 
+	 * mean = Pattern .compile("train", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement(index + "-" + "\uD83D\uDE84" +
+	 * "train"));
+	 * 
+	 * mean = Pattern .compile("Night_trai", Pattern.LITERAL) .matcher(mean)
+	 * .replaceFirst( Matcher.quoteReplacement(index + "-" + "\uD83D\uDE86" +
+	 * "Night train"));
+	 * 
+	 * mean = Pattern .compile("night_trai", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement(index + "-" + "\uD83D\uDE86" +
+	 * "night train"));
+	 * 
+	 * mean = Pattern .compile("Bus", Pattern.LITERAL) .matcher(mean)
+	 * .replaceFirst( Matcher.quoteReplacement(index + "-" + "\uD83D\uDE8C" +
+	 * "Bus"));
+	 * 
+	 * mean = Pattern .compile("bus", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement(index + "-" + "\uD83D\uDE8C" +
+	 * "bus"));
+	 * 
+	 * mean = Pattern .compile("Night_bu", Pattern.LITERAL) .matcher(mean)
+	 * .replaceFirst( Matcher.quoteReplacement(index + "-" + "\ud83d\ude8d" +
+	 * "Night bus"));
+	 * 
+	 * mean = Pattern .compile("night_bu", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement(index + "-" + "\ud83d\ude8d" +
+	 * "night bus"));
+	 * 
+	 * mean = Pattern .compile("Drive", Pattern.LITERAL) .matcher(mean)
+	 * .replaceFirst( Matcher.quoteReplacement(index + "-" + "\uD83D\uDE98" +
+	 * "Drive"));
+	 * 
+	 * mean = Pattern .compile("drive", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement(index + "-" + "\uD83D\uDE98" +
+	 * "drive"));
+	 * 
+	 * mean = Pattern .compile("Car_ferr", Pattern.LITERAL) .matcher(mean)
+	 * .replaceFirst( Matcher.quoteReplacement(index + "-" + "\u26F4" +
+	 * "Car ferry"));
+	 * 
+	 * mean = Pattern .compile("car_ferr", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement(index + "-" + "\u26F4" +
+	 * "car ferry"));
+	 * 
+	 * mean = Pattern .compile("Fly", Pattern.LITERAL) .matcher(mean)
+	 * .replaceFirst( Matcher.quoteReplacement(index + "-" + "\uD83D\uDEEB" +
+	 * "Fly"));
+	 * 
+	 * mean = Pattern .compile("fly", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement(index + "-" + "\uD83D\uDEEB" +
+	 * "fly"));
+	 * 
+	 * mean = Pattern .compile("Shuttle", Pattern.LITERAL) .matcher(mean)
+	 * .replaceFirst( Matcher.quoteReplacement(index + "-" + "\uD83D\uDE90" +
+	 * "Shuttle"));
+	 * 
+	 * mean = Pattern .compile("shuttle", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement(index + "-" + "\uD83D\uDE90" +
+	 * "shuttle"));
+	 * 
+	 * mean = Pattern .compile("Rideshare", Pattern.LITERAL) .matcher(mean)
+	 * .replaceFirst( Matcher.quoteReplacement(index + "-" + "\uD83C\uDFCE" +
+	 * "Rideshare"));
+	 * 
+	 * mean = Pattern .compile("rideshare", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement(index + "-" + "\uD83C\uDFCE" +
+	 * "rideshare"));
+	 * 
+	 * mean = Pattern .compile("Eurotunnel", Pattern.LITERAL) .matcher(mean)
+	 * .replaceFirst( Matcher.quoteReplacement(index + "-" + "\uD83D\uDD73" +
+	 * "Eurotunnel"));
+	 * 
+	 * mean = Pattern .compile("eurotunnel", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement(index + "-" + "\uD83D\uDD73" +
+	 * "eurotunnel"));
+	 * 
+	 * mean = Pattern .compile("Taxi", Pattern.LITERAL) .matcher(mean)
+	 * .replaceFirst( Matcher.quoteReplacement(index + "-" + "\ud83d\ude95" +
+	 * "Taxi"));
+	 * 
+	 * mean = Pattern .compile("taxi", Pattern.LITERAL) .matcher(mean)
+	 * .replaceAll( Matcher.quoteReplacement(index + "-" + "\ud83d\ude95" +
+	 * "taxi"));
+	 * 
+	 * return mean; }
+	 */
 	// / to visualize completed addresses alternative by GoogleAPI
 	public static ReplyKeyboardMarkup keyboardAddressAlternatives(long chatId,
 			List<Place> alternatives, String filter) {

@@ -83,7 +83,7 @@ public class VTServiceCallExecutable extends
 			String coordinatesTo = googleWrapper.getCoordinates(toValue);
 
 			viaggiaAlternatives = viaggiaWrapper.getViaggiaTrentoRoutes(
-					coordinatesFrom, coordinatesTo);
+					coordinatesFrom, coordinatesTo, "TRANSIT", "fastest");
 			// bot.setViaggiaTrentoAlternatives(viaggiaAlternatives);
 			// I look for the user for which this service call has been made
 			DomainObjectInstance user = pe.getReferringUser(doi);
@@ -119,7 +119,7 @@ public class VTServiceCallExecutable extends
 		String coordinatesTo = googleWrapper.getCoordinates(to);
 
 		alternatives = viaggiaWrapper.getViaggiaTrentoResponse(coordinatesFrom,
-				coordinatesTo, serviceExecTime);
+				coordinatesTo, serviceExecTime, "TRANSIT", "fastest");
 
 		result.put("ViaggiaTrento", alternatives);
 
