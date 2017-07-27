@@ -63,46 +63,34 @@ public class STMServiceCallExecutable extends
 
 		// System.out.println("STRINGA RISULTANTE: " + help.toString());
 
-		int t = 0;
+		String result = new String();
 
-		for (int i = 0; i < travelsRomeToRioAfterChoose.size(); i++) {
-			if (travelsRomeToRioAfterChoose.get(i).getVehicle()
-					.equals(help.get(0))
-					&& travelsRomeToRioAfterChoose.get(i).getAgency()
-							.equals(help.get(1))
-					&& travelsRomeToRioAfterChoose.get(i).getStart()
-							.equals(help.get(2))
-					&& travelsRomeToRioAfterChoose.get(i).getArrive()
-							.equals(help.get(3))) {
+		for (TravelsRomeToRioAfterChoose current : travelsRomeToRioAfterChoose) {
+			if (current.getVehicle().equals(help.get(0))
+					&& current.getAgency().equals(help.get(1))
+					&& current.getStart().equals(help.get(2))
+					&& current.getArrive().equals(help.get(3))) {
 
-				travelsRomeToRioAfterChoose
-						.get(i)
-						.setVehicle(
-								Keyboards
-										.setKeyboardJourneyOption(travelsRomeToRioAfterChoose
-												.get(i).getVehicle()));
-				t = i;
+				current.setVehicle(Keyboards.setKeyboardJourneyOption(current
+						.getVehicle()));
+
+				result = current.getPosition() + "-" + current.getStart() + "-"
+						+ current.getArrive() + "-" + current.getDuration()
+						+ "-" + current.getVehicle() + "-"
+						+ current.getAgency() + "-" + current.getDistance()
+						+ "-" + current.getPrice();
 			}
-
-			// create the string for the solution choosen usin R2R
-			String result = travelsRomeToRioAfterChoose.get(t).getPosition()
-					+ "-" + travelsRomeToRioAfterChoose.get(t).getStart() + "-"
-					+ travelsRomeToRioAfterChoose.get(t).getArrive() + "-"
-					+ travelsRomeToRioAfterChoose.get(t).getDuration() + "-"
-					+ travelsRomeToRioAfterChoose.get(t).getVehicle() + "-"
-					+ travelsRomeToRioAfterChoose.get(t).getAgency() + "-"
-					+ travelsRomeToRioAfterChoose.get(t).getDistance() + "-"
-					+ travelsRomeToRioAfterChoose.get(t).getPrice();
-
-			Element resultList = doi
-					.getStateVariableContentByName("ResultList");
-
-			resultList.setTextContent("Rome2RioChoosen<>" + result);
-
-			currentConcrete.setExecuted(true);
-
-			return;
 		}
+		// create the string for the solution choosen usin R2R
+
+		Element resultList = doi.getStateVariableContentByName("ResultList");
+
+		resultList.setTextContent("Rome2RioChoosen<>" + result);
+
+		currentConcrete.setExecuted(true);
+
+		return;
+
 	}
 
 }
