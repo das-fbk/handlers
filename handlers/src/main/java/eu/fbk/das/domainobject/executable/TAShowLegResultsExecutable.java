@@ -70,29 +70,35 @@ public class TAShowLegResultsExecutable extends
 
 				Long id = bot.getCurrentID();
 
-				// qui devo differenziare tra Rome2Rio e BlaBlaCar
-				try {
-					bot.sendMessageDefault(
-							Keyboards.keyboardRome2RioAfterChoose(id),
-							Texts.textRome2RioAfterChoose(
-									Current.getLanguage(id), plan));
-				} catch (TelegramApiException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				if (result.getFirstChild().getNodeValue()
+						.contains("TripAlternativeBlaBlaCar")) {
+					// send results to the user
+
+					try {
+						bot.sendMessageDefault(
+								Keyboards.keyboardBlaBlaCarResult(id,
+										bot.getAlternativesBlaBlaCar(), "NULL"),
+								Texts.textBlaBlaCarResult(Current
+										.getLanguage(id), Keyboards
+										.getDifferentWayTravelBlaBlaCar(), ""));
+					} catch (TelegramApiException e) {
+
+						e.printStackTrace();
+					}
+
+				} else {
+
+					// Rome2Rio Case
+					try {
+						bot.sendMessageDefault(
+								Keyboards.keyboardRome2RioAfterChoose(id),
+								Texts.textRome2RioAfterChoose(
+										Current.getLanguage(id), plan));
+					} catch (TelegramApiException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
-
-				// send results to the user
-				/*
-				 * try {
-				 * bot.sendMessageDefault(Keyboards.keyboardBlaBlaCarResult( id,
-				 * bot.getAlternativesBlaBlaCar(), "NULL"), Texts
-				 * .textBlaBlaCarResult(Current.getLanguage(id),
-				 * Keyboards.getDifferentWayTravelBlaBlaCar(), "")); } catch
-				 * (TelegramApiException e) {
-				 * 
-				 * e.printStackTrace(); }
-				 */
-
 			}
 
 		}
