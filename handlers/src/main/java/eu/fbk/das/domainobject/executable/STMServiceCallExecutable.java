@@ -74,11 +74,11 @@ public class STMServiceCallExecutable extends
 				current.setVehicle(Keyboards.setKeyboardJourneyOption(current
 						.getVehicle()));
 
-				result = current.getPosition() + "-" + current.getStart() + "-"
-						+ current.getArrive() + "-" + current.getDuration()
-						+ "-" + current.getVehicle() + "-"
-						+ current.getAgency() + "-" + current.getDistance()
-						+ "-" + current.getPrice();
+				result = current.getPosition() + "@" + current.getStart() + "@"
+						+ current.getArrive() + "@" + current.getDuration()
+						+ "@" + current.getVehicle() + "@"
+						+ current.getAgency() + "@" + current.getDistance()
+						+ "@" + current.getPrice();
 			}
 		}
 		// create the string for the solution choosen usin R2R

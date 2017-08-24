@@ -339,7 +339,7 @@ public class Texts {
 			String resultR2R) {
 
 		// take all the parameters to show splitting the input string
-		String[] parts = resultR2R.split("-");
+		String[] parts = resultR2R.split("@");
 		String position = parts[0];
 		String from = parts[1];
 		String to = parts[2];
@@ -350,7 +350,6 @@ public class Texts {
 		String price = parts[7];
 
 		int durationValue = Integer.parseInt(duration);
-		double priceValue = Double.parseDouble(price);
 
 		String result = "*" + position + " LEG*\n" + "*From* " + from + "\n"
 				+ "*To* " + to + "\n";
@@ -364,8 +363,12 @@ public class Texts {
 		}
 		result += "\u23F3 " + durationString + "\n" + "\u21e5 " + distance
 				+ " Km" + "\n";
-		if (priceValue != -1) {
-			result += "\uD83D\uDCB0 " + priceValue + " \u20ac" + "\n";
+
+		if (!price.equals("") && price != null) {
+			double priceValue = Double.parseDouble(price);
+			if (priceValue != -1) {
+				result += "\uD83D\uDCB0 " + priceValue + " \u20ac" + "\n";
+			}
 		}
 		result += vehicle;
 		if (!agency.equals("999")) {
