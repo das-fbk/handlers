@@ -12,8 +12,10 @@ import org.json.JSONObject;
 
 public class GoogleAPIWrapper {
 
+	private static String GoogleAPIKey = "AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg";
+
 	public String getAddress(Float lat, Float longit) {
-		String GoogleAPIKey = "AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg";
+		// String GoogleAPIKey = "AIzaSyAiWbh-RS5NpZgwiAOmHEho-9R2cQJKnxc";
 		String latString = lat.toString();
 		String longString = longit.toString();
 		String latlng = latString + ',' + longString;
@@ -48,7 +50,7 @@ public class GoogleAPIWrapper {
 			String destination) {
 
 		ArrayList<GoogleTransitAlternative> alternatives = new ArrayList<GoogleTransitAlternative>();
-		String GoogleAPIKey = "AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg";
+		// String GoogleAPIKey = "AIzaSyAiWbh-RS5NpZgwiAOmHEho-9R2cQJKnxc";
 
 		String URL = "https://maps.googleapis.com/maps/api/directions/json?origin="
 				+ source
@@ -79,7 +81,7 @@ public class GoogleAPIWrapper {
 
 	// retrieve the information about the Province of a certain place/address.
 	public String retrieveProvince(String placeID) {
-		String GoogleAPIKey = "AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg";
+		// String GoogleAPIKey = "AIzaSyAiWbh-RS5NpZgwiAOmHEho-9R2cQJKnxc";
 		String URL = "https://maps.googleapis.com/maps/api/place/details/json?placeid="
 				+ placeID + "&key=" + GoogleAPIKey;
 
@@ -139,7 +141,8 @@ public class GoogleAPIWrapper {
 	 */
 
 	public String getPlaceID(String address) {
-		String GoogleAPIKey = "AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg";
+		// old string = AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg
+		// String GoogleAPIKey = "AIzaSyAiWbh-RS5NpZgwiAOmHEho-9R2cQJKnxc";
 		String URL = "https://maps.googleapis.com/maps/api/geocode/json?address="
 				+ address + "&key=" + GoogleAPIKey;
 		// System.out.println(URL);
@@ -166,8 +169,11 @@ public class GoogleAPIWrapper {
 	public String getGoogleAutocomplete(String city) {
 
 		String alternatives = new String();
-		String result = callURL("https://maps.googleapis.com/maps/api/place/autocomplete/json?key=AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg&input="
-				+ city + "&components=country:it&language=en");
+		String result = callURL("https://maps.googleapis.com/maps/api/place/autocomplete/json?key="
+				+ GoogleAPIKey
+				+ "&input="
+				+ city
+				+ "&components=country:it&language=en");
 
 		if (result.equalsIgnoreCase("erroreAPI")) {
 			return alternatives;
@@ -202,8 +208,7 @@ public class GoogleAPIWrapper {
 		completedFrom = completedFrom.replace(" ", "+");
 
 		String URL = "https://maps.googleapis.com/maps/api/geocode/json?address="
-				+ completedFrom
-				+ "&key=AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg";
+				+ completedFrom + "&key=" + GoogleAPIKey;
 		// System.out.println(URL);
 		String result = callURL(URL);
 		String latlong = "";
