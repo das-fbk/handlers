@@ -17,9 +17,8 @@ import eu.fbk.das.domainobject.executable.utils.GoogleAPI.GoogleAPIWrapper;
 
 public class Rome2RioAPIWrapper {
 	
-	private String rome2rioKey = "zTtfEtED";
 	
-	//private String rome2rioKey = getRome2rioAPIKey();
+	private String rome2rioKey = getRome2rioAPIKey();
 
 	public ArrayList<TripAlternativeRome2Rio> getRome2RioAlternatives(
 			String partenza, String destinazione) {
