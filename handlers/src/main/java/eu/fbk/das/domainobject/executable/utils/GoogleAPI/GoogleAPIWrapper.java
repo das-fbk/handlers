@@ -1,6 +1,8 @@
 package eu.fbk.das.domainobject.executable.utils.GoogleAPI;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
@@ -11,11 +13,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class GoogleAPIWrapper {
-
+	
 	private static String GoogleAPIKey = "AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg";
 
+	//private static String GoogleAPIKey = getGoogleAPIKey();
+
 	public String getAddress(Float lat, Float longit) {
-		// String GoogleAPIKey = "AIzaSyAiWbh-RS5NpZgwiAOmHEho-9R2cQJKnxc";
 		String latString = lat.toString();
 		String longString = longit.toString();
 		String latlng = latString + ',' + longString;
@@ -50,7 +53,6 @@ public class GoogleAPIWrapper {
 			String destination) {
 
 		ArrayList<GoogleTransitAlternative> alternatives = new ArrayList<GoogleTransitAlternative>();
-		// String GoogleAPIKey = "AIzaSyAiWbh-RS5NpZgwiAOmHEho-9R2cQJKnxc";
 
 		String URL = "https://maps.googleapis.com/maps/api/directions/json?origin="
 				+ source
@@ -81,7 +83,7 @@ public class GoogleAPIWrapper {
 
 	// retrieve the information about the Province of a certain place/address.
 	public String retrieveProvince(String placeID) {
-		// String GoogleAPIKey = "AIzaSyAiWbh-RS5NpZgwiAOmHEho-9R2cQJKnxc";
+		
 		String URL = "https://maps.googleapis.com/maps/api/place/details/json?placeid="
 				+ placeID + "&key=" + GoogleAPIKey;
 
@@ -109,43 +111,13 @@ public class GoogleAPIWrapper {
 		return province;
 	}
 
-	/*
-	 * @SuppressWarnings("unused") public String getCoordinates(String address)
-	 * { String GoogleAPIKey = "AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg"; String
-	 * URL = "https://maps.googleapis.com/maps/api/geocode/json?address=" +
-	 * address + "&key=" + GoogleAPIKey; // System.out.println(URL); String
-	 * result = callURL(URL); // Json Parsing String latlong = "";
-	 * 
-	 * if (result.equalsIgnoreCase("erroreAPI")) {
-	 * System.out.println("errorAPI"); } else { // System.out.println(result);
-	 * JSONObject jsonObj = new JSONObject(result); JSONArray routes = new
-	 * JSONArray(); routes = jsonObj.getJSONArray("results"); for (int i = 0; i
-	 * < routes.length(); i++) {
-	 * 
-	 * JSONObject info = (JSONObject) routes.get(i); System.out.println(info);
-	 * JSONObject geometry = info.getJSONObject("geometry"); JSONObject viewport
-	 * = geometry.getJSONObject("viewport"); JSONObject coord =
-	 * viewport.getJSONObject("southwest"); System.out.println(coord);
-	 * 
-	 * Double lat = coord.getDouble("lat"); Double lng = coord.getDouble("lng");
-	 * 
-	 * String latString = lat.toString(); String lngString = lng.toString();
-	 * 
-	 * latlong = latString + "," + lngString;
-	 * 
-	 * break;
-	 * 
-	 * } }
-	 * 
-	 * return latlong; }
-	 */
+	
 
 	public String getPlaceID(String address) {
-		// old string = AIzaSyBnLrMivSthmUmUipPfk5sidv7f0QvvDjg
-		// String GoogleAPIKey = "AIzaSyAiWbh-RS5NpZgwiAOmHEho-9R2cQJKnxc";
+		
 		String URL = "https://maps.googleapis.com/maps/api/geocode/json?address="
 				+ address + "&key=" + GoogleAPIKey;
-		// System.out.println(URL);
+		
 		String result = callURL(URL);
 
 		String id = "";
@@ -269,6 +241,29 @@ public class GoogleAPIWrapper {
 		}
 
 		return sb.toString();
+	}
+	
+	public static String getGoogleAPIKey() {
+		BufferedReader reader;
+		String result = "";
+
+		try {
+			reader = new BufferedReader(new FileReader("requiredKeys.txt"));
+			result = reader.readLine();
+
+		} catch (IOException e) {
+			System.err.println("Error :" + e);
+		}
+		
+		String[] fields = result.split(";");
+		String key = fields[0];
+		
+		String[] GoogleKeyValue = key.split("=");
+	
+		String keyValue = GoogleKeyValue[1];
+		
+		// System.out.println(result);
+		return keyValue;
 	}
 
 }

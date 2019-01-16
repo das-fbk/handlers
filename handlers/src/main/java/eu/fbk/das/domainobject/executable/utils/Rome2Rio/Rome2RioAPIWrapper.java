@@ -1,6 +1,8 @@
 package eu.fbk.das.domainobject.executable.utils.Rome2Rio;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
@@ -14,12 +16,16 @@ import org.json.JSONObject;
 import eu.fbk.das.domainobject.executable.utils.GoogleAPI.GoogleAPIWrapper;
 
 public class Rome2RioAPIWrapper {
+	
+	private String rome2rioKey = "zTtfEtED";
+	
+	//private String rome2rioKey = getRome2rioAPIKey();
 
 	public ArrayList<TripAlternativeRome2Rio> getRome2RioAlternatives(
 			String partenza, String destinazione) {
 
 		ArrayList<TripAlternativeRome2Rio> alternatives = new ArrayList<TripAlternativeRome2Rio>();
-		String result = callURL("http://free.rome2rio.com/api/1.4/json/Search?key=Yt1V3vTI&oName="
+		String result = callURL("http://free.rome2rio.com/api/1.4/json/Search?key=" + rome2rioKey + "&oName="
 				+ partenza + "&dName=" + destinazione);
 		if (result.equalsIgnoreCase("erroreAPI")) {
 			return alternatives;
@@ -133,7 +139,7 @@ public class Rome2RioAPIWrapper {
 		GoogleAPIWrapper googleWrapper = new GoogleAPIWrapper();
 		String originCoord = googleWrapper.getCoordinates(partenza);
 		String destCoord = googleWrapper.getCoordinates(destinazione);
-		String url = "http://free.rome2rio.com/api/1.4/json/Search?key=Yt1V3vTI&oPos="
+		String url = "http://free.rome2rio.com/api/1.4/json/Search?key=" + rome2rioKey + "&oPos="
 				+ originCoord
 				+ "&oKind=addressd&dPos="
 				+ destCoord
@@ -365,7 +371,7 @@ public class Rome2RioAPIWrapper {
 		GoogleAPIWrapper googleWrapper = new GoogleAPIWrapper();
 		String originCoord = googleWrapper.getCoordinates(partenza);
 		String destCoord = googleWrapper.getCoordinates(destinazione);
-		String url = "http://free.rome2rio.com/api/1.4/json/Search?key=Yt1V3vTI&oPos="
+		String url = "http://free.rome2rio.com/api/1.4/json/Search?key=" + rome2rioKey + "&oPos="
 				+ originCoord
 				+ "&oKind=addressd&dPos="
 				+ destCoord
@@ -438,6 +444,29 @@ public class Rome2RioAPIWrapper {
 		}
 
 		return sb.toString();
+	}
+	
+	public static String getRome2rioAPIKey() {
+		BufferedReader reader;
+		String result = "";
+
+		try {
+			reader = new BufferedReader(new FileReader("requiredKeys.txt"));
+			result = reader.readLine();
+
+		} catch (IOException e) {
+			System.err.println("Error :" + e);
+		}
+		
+		String[] fields = result.split(";");
+		String key = fields[1];
+		
+		String[] r2rKeyValue = key.split("=");
+	
+		String keyValue = r2rKeyValue[1];
+		
+		// System.out.println(result);
+		return keyValue;
 	}
 
 }
